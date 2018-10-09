@@ -1,142 +1,102 @@
+<!-- 递归树组件示例 -->
 <template>
-  <div>
-    <div style="margin-left: 1vw;margin-right: 1vw" class="cl pd-5 header_body" >
-    <span>
-        <el-button type="primary" size="small" icon="el-icon-plus" >添加分类</el-button>
-    </span>
-    </div>
-    <el-row>
-      <el-col :span="4">
-        <el-tree
-          class="left_category"
-          :data="category"
-          :props="defaultProps"
-          defaultExpandAll
-          highlight-current>
-        </el-tree>
-      </el-col>
-      <el-col :span="20">
-        <div >
-          <el-form :model="form" label-width="80px">
-            <el-form-item label="分类名称"  >
-              <el-input style="width: 400px" v-model="form.name" ></el-input>
-            </el-form-item>
-            <el-form-item label="活动区域">
-              <el-input @click="dialogVisible=true" disabled style="width: 200px" v-model="form.category" placeholder="请选父节点"></el-input>
-              <el-button @click="dialogVisible=true">选择父节点分类</el-button>
-            </el-form-item>
-            <el-form-item label="是否启用">
-              <el-switch v-model="form.delivery"></el-switch>
-            </el-form-item>
-            <el-form-item>
-              <el-button type="primary" @click="onSubmit">立即创建</el-button>
-              <el-button>取消</el-button>
-            </el-form-item>
-
-          </el-form>
-        </div>
-      </el-col>
-    </el-row>
-    <div>
-    <el-dialog
-      title="选择上级分类"
-      :visible.sync="dialogVisible"
-      width="25%"
-      show-close
-    :before-close="handleClose"
-    class="category"
-      id="category"
-    >
-      <el-tree
-        class="filter-tree"
-        :data="category"
-        :props="defaultProps"
-        defaultExpandAll
-
-        highlight-current>
-      </el-tree>
-      <div slot="footer" class="dialog-footer">
-        <!--<el-button  type="primary" size="small" @click="UpdateData">提交</el-button>-->
+  <div class="tree">
+    <div class="content">
+      <div class="float">
+        <tree-view :isLoading="syncTreeLoading" :value="syncTreeData" :icon="deepIcon" :nodeClick="nodeClick"></tree-view>
       </div>
-    </el-dialog>
+      <div class="right">
+        <!--分类编辑-->
+        <el-form>
+            <el-form-item label="分类名称">
+            <el-input v-model="cateform.name"></el-input>
+            </el-form-item>
+            <el-form-item label="上级分类">
+                <el-input v-model="lastcate.name"></el-input>
+            </el-form-item>
+        </el-form>
+      </div>
     </div>
-  </div>
 
+  </div>
 </template>
 
 <script>
-  import xtree from '@/components/xtree'
-  import http from '@/api/public'
-  import CoreApi from '@/api/CoreApi'
-  export default {
-    name: 'category',
-    data() {
-      return {
-        dialogVisible: false,
-        filterText: '',
-        category: [],
-        defaultProps: {
-          children: 'children',
-          label: 'label'
-        },
-        form: {
-
-        },
-        params: {
-
+    import treeView from '../../components/tree/tree-view'
+import http from '@/api/public'
+    import CoreApi from '@/api/CoreApi'
+    export default {
+      name: 'tree-view-demo',
+      components: {
+        treeView
+      },
+      data() {
+        return {
+          cateform: {
+            name: 'test'
+          },
+          lastcate: {
+            name: null
+          },
+          deep: 10,
+          count: 5,
+          syncTreeLoading: false,
+          syncTreeData: [],
+          deepIcon: ['help', 'gear-a', 'edit', 'refresh']
         }
-      }
   },
-    methods: {
-
-      featchCategory() {
-        // 获取分类数据
-        http.fetchGet(CoreApi.SHOP_CATEGORY_LIST, {}).then(res => {
-          this.category = res.data
-        })
+      methods: {
+        nodeClick(node, parent) {
+          console.log(node)
+          for (var index in parent) {
+            if (parent[index].id === node.pid_id) {
+              this.lastcate = parent[index]
+              break
+            }
+          }
+        },
+        featchCategory() {
+          // 获取分类数据
+          http.fetchGet(CoreApi.SHOP_CATEGORY_LIST, {}).then(res => {
+            this.syncTreeData = res.data
+          })
+        }
       },
-      onSubmit() {
-        console.log()
-      },
-      checkCategory() {
-        console.log(1)
-      },
-      handleClose() {
-        this.dialogVisible = false
-      }
-    },
-    created() {
-      this.featchCategory()
-    },
-    components: { xtree }
-
-  }
+      created() {
+        const self = this
+        self.syncTreeLoading = true
+        self.featchCategory()
+        self.syncTreeLoading = false
+    }
+    }
 </script>
 
-<style lang="css"  >
-    .category  .el-dialog__header {
-      padding: 20px 20px 0px ;
-    }
-   .category  .el-dialog__body {
-     padding: 15px 20px!important;
-     color: #606266;
-     line-height: 24px;
-     font-size: 14px;
-   }
-    .category  .el-dialog__title {
-      line-height: 18px;
-      font-size: 14px;
-      color: #303133;
-    }
-
-
-
-</style>
 <style scoped>
-  .header_body {
-    padding: 20px 0px;
+  .tree {
+    width: 100%;
+    height: 100%;
   }
-  .left_category {
-    padding: 10px 20px;
+  .tree p {
+    font-size: 16px;
+    color: black;
+    font-weight: bold;
+    text-align: center;
+  }
+  .tree .float {
+    float: left;
+    width: 350px;
+    height: 100%;
+    text-align: left;
+    margin-right: 10px;
+    background: #fff;
+    margin-top: 10px;
+  }
+  .content {
+    margin-top: 10px;
+
+  }
+  .content .right{
+      float: left;
+    width: 750px;
   }
 </style>
