@@ -59,6 +59,10 @@ module.exports = {
         }
       },
       {
+          test:/\.less$/,
+          loader:'less-loader'
+      },
+      {
         test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
         loader: 'url-loader',
         exclude: [resolve('src/icons')],
