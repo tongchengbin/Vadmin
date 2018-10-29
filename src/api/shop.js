@@ -95,6 +95,8 @@ export function qiaohuRecordList(params) {
   })
 }
 
+
+
 // qiaohu recored
 export function sexxlist(params) {
   return request({
@@ -192,3 +194,20 @@ export function get_location(url) {
     method: 'get'
   })
 }
+
+export function featchCategoryTree() {
+    return request({
+        url:'/api/admin/shop/category/tree/',
+        method: 'get'
+    })
+}
+export function featchCategoryList(params) {
+    return request({
+        url:'/api/admin/shop/category/',
+        parmas,
+        method: 'get'
+    })
+}
+
+
+

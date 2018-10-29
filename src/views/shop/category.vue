@@ -1,112 +1,299 @@
 <template>
-    <div class="warp" style="min-width: 1200px">
-        <div>
-            <el-row :gutter="20">
-                <el-col :span="6"><div class="grid-content bg-purple"></div></el-col>
-                <el-col :span="6" :offset="6"><div class="grid-content bg-purple"></div></el-col>
-            </el-row>
-            <el-row :gutter="20">
-                <el-col :span="6" :offset="6"><div class="grid-content bg-purple"></div></el-col>
-                <el-col :span="6" :offset="6"><div class="grid-content bg-purple"></div></el-col>
-            </el-row>
-            <el-row :gutter="20">
-                <el-col :span="12" :offset="6"><div class="grid-content bg-purple"></div></el-col>
-            </el-row>
-        </div>
-        <el-container width="300px">
-            <el-aside>
-                <el-tree :data="data" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
-            </el-aside>
-            <el-main>
-                <el-form ref="form" :model="tempForm" label-width="80px" size="mini">
-                    <el-form-item label="活动名称">
-                        <el-input v-model="tempForm.name"></el-input>
-                    </el-form-item>
+  <div class="warp" style="min-width: 1200px">
+    <el-container>
+      <el-container>
+        <el-aside width="300px">
+          <div class="box-tree">
+            <div class="custom-tree-container">
+              <div class="action-buttom">
+                <div style="padding: 10px">分类管理</div>
+                <el-button @click="editNode('add')" size="mini" type="primary" icon="el-icon-circle-plus" circle></el-button>
+                <el-button @click="editNode('update')" size="mini" type="primary" icon="el-icon-edit" circle></el-button>
+                <el-button @click="delNode()" size="mini" type="danger" icon="el-icon-delete" circle></el-button>
+              </div>
+                <el-tree  v-loading="treeLoading"
+                        :data="treedata"
+                        node-key="id"
+                          ref="category"
+                        default-expand-all
+                        :expand-on-click-node="false">
+                  <span class="custom-tree-node" slot-scope="{ node, data }">
+                    <span>{{ node.label }}  </span>
+                   </span>
+                </el-tree>
+              </div>
+          </div>
+        </el-aside>
+        <el-main>
+          <div class="main-table">
+            <div class="app-container">
+              <div class="filter-container" style="float: right">
+                <el-button @click="handleAddAttribute" size="mini" type="primary" icon="el-icon-circle-plus" circle></el-button>
+              </div>
+            </div>
+            <el-table :data="attrsData" style="width: 100%">
+              <el-table-column
+                      prop="category_name"
+                      label="分类"
+                      width="180">
+              </el-table-column>
+              <el-table-column min-width="300px" label="名称">
+                <template slot-scope="scope">
+                  <template v-if="scope.row.edit">
+                    <el-input v-model="scope.row.originalName" class="edit-input" size="small"/>
+                    <el-button class="cancel-btn" size="small" icon="el-icon-refresh" type="warning" @click="cancelEdit(scope.row)">cancel</el-button>
+                  </template>
+                  <span v-else>{{ scope.row.name }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column align="center" label="Actions" width="120">
+                <template slot-scope="scope">
+                  <el-button v-if="scope.row.edit" type="success" size="small" icon="el-icon-circle-check-outline" @click="confirmEdit(scope.row)">Ok</el-button>
+                  <el-button v-else type="primary" size="small" icon="el-icon-edit" @click="scope.row.edit=!scope.row.edit">Edit</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
+        </el-main>
+        <el-container>
+          <el-main>
+            <el-dialog :visible.sync="dialogVisible">
+              <div class="box">
+                <el-form label-width="80px" size="mini">
+                  <el-form-item label="上级分类">
+                    <el-input :disabled="true" v-model="formTree.parentLabel"></el-input>
+                  </el-form-item>
+                  <el-form-item label="分类名称">
+                    <el-input v-model="formTree.label"></el-input>
+                  </el-form-item>
+                  <el-form-item>
+                    <el-button v-if="formAction=='add'" type="primary" @click="submitForm" >添加</el-button>
+                    <el-button v-else type="primary" @click="submitForm" >提交</el-button>
+                  </el-form-item>
                 </el-form>
-            </el-main>
+              </div>
+            </el-dialog>
+          </el-main>
         </el-container>
-        <!--<div class="content">-->
-            <!---->
-            <!--<div class="box pd">-->
-                <!--<div>分类</div>-->
-                <!--<el-tree :data="data" :props="defaultProps" @node-click="handleNodeClick"></el-tree>-->
-            <!--</div>-->
-            <!--<div class="box fm">-->
-                <!--<el-form ref="form" :model="sizeForm" label-width="80px" size="mini">-->
-                    <!--<el-form-item label="活动名称">-->
-                        <!--&lt;!&ndash;<el-input v-model="sizeForm.name"></el-input>&ndash;&gt;-->
-                    <!--</el-form-item>-->
-                <!--</el-form>-->
-            <!--</div>-->
-        <!--</div>-->
-    </div>
+      </el-container>
+    </el-container>
+    <categorycard :show="categoryCardShow"></categorycard>
+    <el-dialog :visible.sync="attributeDialog">
+      <div class="box">
+        <el-form label-width="80px" size="mini">
+          <el-form-item label="分类">
+            <el-input :disabled="true" v-model="attributeForm.category.label"></el-input>
+
+          </el-form-item>
+        </el-form>
+      </div>
+    </el-dialog>
+  </div>
 </template>
 
 
 <script>
-    export default {
-      data() {
-        return {
-            tempForm:{
-                name:"dfdsfsdfdsfsdf"
-            },
-
-          data: [{
-            label: '一级 1',
-            children: [{
-              label: '二级 1-1',
-              children: [{
-                label: '三级 1-1-1'
-              }]
-            }]
-          }, {
-            label: '一级 2',
-            children: [{
-              label: '二级 2-1',
-              children: [{
-                label: '三级 2-1-1'
-              }]
-            }, {
-              label: '二级 2-2',
-              children: [{
-                label: '三级 2-2-1'
-              }]
-            }]
-          }, {
-            label: '一级 3',
-            children: [{
-              label: '二级 3-1',
-              children: [{
-                label: '三级 3-1-1'
-              }]
-            }, {
-              label: '二级 3-2',
-              children: [{
-                label: '三级 3-2-1'
-              }]
-            }]
-          }],
-          defaultProps: {
-            children: 'children',
-            label: 'label'
+  import { featchCategoryTree } from '@/api/shop'
+  import request from '@/api/public'
+  import categorycard from '@/views/shop/components/CategoryCard'
+  export default {
+    data() {
+      return {
+        // 分类组件
+        categoryCardShow: true,
+        // 分类属性列表
+        attrsParams: {
+          page: 1,
+          pagesize: 10
+        },
+        attributeForm: {
+          category: {
+            id: '',
+            label: ''
           }
-        }
-  },
-      methods: {
-        handleNodeClick(data) {
-          console.log(data)
+        },
+        attrsData: [],
+        attributeDialog: false,
+        treeLoading: true,
+        dialogVisible: false,
+        tempForm: {
+          name: 'dfdsfsdfdsfsdf'
+        },
+        formAction: 'update',
+        formTree: {
+          label: '',
+          id: '',
+          pid_id: '',
+          parentLabel: ''
+        },
+        treedata: [],
+        defaultProps: {
+          children: 'children',
+          label: 'label'
         }
       }
+    },
+    methods: {
+      featchtreeDate() {
+        this.restTree()
+        this.treeLoading = true
+        featchCategoryTree().then(res => {
+          this.treedata = res.data
+        })
+        this.treeLoading = false
+      },
+      submitForm() {
+        if (this.formAction == 'update') {
+          const data = {
+            label: this.formTree.label,
+            id: this.formTree.id
+          }
+          request.httpPatch('/api/admin/shop/category/{pk}/', data, data.id).then(res => {
+            this.$message({
+              message: '修改成功',
+              type: 'success'
+            })
+          })
+        } else {
+          const data = {
+            label: this.formTree.label,
+            pid: this.formTree.pid_id
+          }
+          request.post('/api/admin/shop/category/', data, data.id).then(res => {
+            this.$message({
+              message: '修改成功',
+              type: 'success'
+            })
+          })
+        }
+        this.dialogVisible = false
+        this.featchtreeDate()
+      },
+      handleDrop(before, after, inner) {
+        const data = {
+          id: before.data.id,
+          pid: after.data.id
+        }
+        if (inner == 'before') {
+          data.pid = after.data.pid_id
+        }
+        console.log(after, inner)
+        request.httpPatch('/api/admin/shop/category/{pk}/', data, data.id).then(res => {
+          this.featchtreeDate()
+          this.$message({
+            message: '修改成功',
+            type: 'success'
+          })
+        })
+      },
+      editNode(action) {
+        const node = this.$refs.category.currentNode && this.$refs.category.currentNode.node
+        console.log(node)
+        if (action === 'update') {
+          if (!node) {
+            this.$message({
+              message: '请选择节点',
+              type: 'warring'
+            })
+          } else {
+            this.dialogVisible = true
+            this.formAction = action
+            this.formTree = node.data
+            this.formTree.parentLabel = node.parent.label
+          }
+        } else {
+        //  create
+          this.dialogVisible = true
+          this.formAction = action
+          this.formTree = {}
+          this.formTree.pid_id = node.data.id
+          this.formTree.parentLabel = node.label
+        }
+      },
+      delNode() {
+        const key = this.$refs.category.getCurrentKey()
+        if (key) {
+          this.treeLoading = true
+          request.httpDelete('/api/admin/shop/category/{pk}/', key).then(res => {
+            this.$message({
+              message: '修改成功',
+              type: 'success'
+            })
+            this.featchtreeDate()
+          })
+        } else {
+          this.$message({
+            message: '请选择节点',
+            type: 'warring'
+          })
+        }
+        this.restTree()
+      },
+      restTree() {
+        this.formTree = {}
+      },
+      feathAttributeData() {
+        request.fetchGet('/api/admin/shop/attribute/', this.attrsParams).then(response => {
+          this.attrsData = response.data.results.map(v => {
+            this.$set(v, 'edit', false)
+            v.originalName = v.name
+            return v
+          })
+        })
+      },
+      handleAddAttribute() {
+        this.attributeDialog = true
+      },
+      cancelEdit(row) {
+        console.log(row)
+        row.originalName = row.name
+        row.edit = false
+        this.$message({
+          message: 'The title has been restored to the original value',
+          type: 'warning'
+        })
+      },
+      confirmEdit(row) {
+        row.edit = false
+        row.name = row.originalName
+        const data = {
+          id: row.id,
+          name: row.originalName
+        }
+        request.httpPatch('/api/admin/shop/attribute/{pk}/', data, data.id).then(response => {
+          this.feathAttributeData()
+        })
+        this.$message({
+          message: 'The title has been edited',
+          type: 'success'
+        })
+      }
+    },
+    created() {
+      this.featchtreeDate()
+      this.feathAttributeData()
+    },
+    components: {
+      categorycard
     }
+  }
 </script>
 <style>
-    .content{
-        margin-top: 30px;
-        margin-left: 10px;
-        padding: 20px;
-        width: 350px;
-    }
-    .box{
+  .custom-tree-node {
+    -ms-flex: 1;
+    flex: 1;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-align: center;
+    align-items: center;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    font-size: 14px;
+    padding-right: 8px;
+  }
+
+    .box-tree {
+        padding: 24px;
         border: 1px solid #eee;
         border-radius: 8px;
         margin-bottom: 20px;
@@ -114,7 +301,20 @@
         position: relative;
         transition: all .2s ease-in-out;
     }
-    .box:hover {
+    .box {
+        max-width: 600px;
+        min-height:200px ;
+        padding: 24px 100px;
+        border: 1px solid #eee;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 3px;
+        position: relative;
+        transition: all .2s ease-in-out;
+    }
+    .box-tree:hover {
         box-shadow: 0 2px 7px rgba(0,0,0,.33);
         border-color: transparent;
         position: relative;
@@ -132,5 +332,30 @@
         float: right;
         padding: 10px;
     }
-
+  .el-dialog{
+    width: 600px;
+  }
+  .action-buttom{
+    text-align: center;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    margin: auto;
+  }
+  .action-buttom > button {
+    margin: auto;
+    padding: 0 5px;
+  }
+  .main-table{
+    padding-left: 15px;
+  }
+  .main-table .table-head {
+  }
+  .edit-input {
+    padding-right: 100px;
+  }
+  .cancel-btn {
+    position: absolute;
+    right: 15px;
+    top: 10px;
+  }
 </style>

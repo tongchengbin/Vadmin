@@ -11,12 +11,12 @@ export default {
       params
     })
   },
-  fetchPost(url, params = {}, pk) {
+  post(url, data = {}, pk) {
     url = pk ? url.replace('{pk}', pk) : url
     return request({
       url,
       method: 'post',
-      params
+      data
     })
   },
   httpUpdate(url, params = {}, pk) {
@@ -27,14 +27,22 @@ export default {
       params
     })
   },
-  httpDelete(url, params, pk) {
+  httpDelete(url, pk) {
     url = pk ? url.replace('{pk}', pk) : url
     console.log(url)
     return request({
       url,
       method: 'delete',
-      params
     })
-  }
+  },
+    httpPatch(url, data, pk) {
+        url = pk ? url.replace('{pk}', pk) : url
+        console.log(url)
+        return request({
+            url,
+            method: 'patch',
+            data
+        })
+    }
 
 }
