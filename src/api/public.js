@@ -32,17 +32,17 @@ export default {
     console.log(url)
     return request({
       url,
-      method: 'delete',
+      method: 'delete'
     })
   },
-    httpPatch(url, data, pk) {
-        url = pk ? url.replace('{pk}', pk) : url
-        console.log(url)
-        return request({
-            url,
-            method: 'patch',
-            data
-        })
-    }
+  httpPatch(url, data, pk) {
+    url = pk ? url.replace('{pk}', pk) : url
+    console.log(url)
+    return request({
+      url,
+      method: 'patch',
+      data
+    })
+  }
 
 }

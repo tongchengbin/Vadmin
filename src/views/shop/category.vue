@@ -31,25 +31,17 @@
                 <el-button @click="handleAddAttribute" size="mini" type="primary" icon="el-icon-circle-plus" circle></el-button>
               </div>
             </div>
+            <!--属性管理-->
             <el-table :data="attrsData" style="width: 100%">
+              <el-table-column prop="category_name" label="分类" width="180"></el-table-column>
+              <el-table-column prop="name" min-width="300px" label="名称" ></el-table-column>
               <el-table-column
-                      prop="category_name"
-                      label="分类"
-                      width="180">
-              </el-table-column>
-              <el-table-column min-width="300px" label="名称">
+                      fixed="right"
+                      label="操作"
+                      width="100">
                 <template slot-scope="scope">
-                  <template v-if="scope.row.edit">
-                    <el-input v-model="scope.row.originalName" class="edit-input" size="small"/>
-                    <el-button class="cancel-btn" size="small" icon="el-icon-refresh" type="warning" @click="cancelEdit(scope.row)">cancel</el-button>
-                  </template>
-                  <span v-else>{{ scope.row.name }}</span>
-                </template>
-              </el-table-column>
-              <el-table-column align="center" label="Actions" width="120">
-                <template slot-scope="scope">
-                  <el-button v-if="scope.row.edit" type="success" size="small" icon="el-icon-circle-check-outline" @click="confirmEdit(scope.row)">Ok</el-button>
-                  <el-button v-else type="primary" size="small" icon="el-icon-edit" @click="scope.row.edit=!scope.row.edit">Edit</el-button>
+                  <el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button>
+                  <el-button type="text" size="small">编辑</el-button>
                 </template>
               </el-table-column>
             </el-table>
@@ -61,7 +53,7 @@
               <div class="box">
                 <el-form label-width="80px" size="mini">
                   <el-form-item label="上级分类">
-                    <el-input :disabled="true" v-model="formTree.parentLabel"></el-input>
+                    <el-input  v-model="formTree.parentLabel"  @focus="categoryCardShow = true"></el-input>
                   </el-form-item>
                   <el-form-item label="分类名称">
                     <el-input v-model="formTree.label"></el-input>
@@ -77,16 +69,27 @@
         </el-container>
       </el-container>
     </el-container>
-    <categorycard :show="categoryCardShow"></categorycard>
-    <el-dialog :visible.sync="attributeDialog">
+    <categorycard :show.sync="categoryCardShow" @handleSelectedTree="handleSelectedTree"></categorycard>
+    <el-dialog :visible.sync="treeVisible" custom-class="categorydialog">
       <div class="box">
         <el-form label-width="80px" size="mini">
           <el-form-item label="分类">
             <el-input :disabled="true" v-model="attributeForm.category.label"></el-input>
-
           </el-form-item>
         </el-form>
       </div>
+    </el-dialog>
+    <!--属性编辑对话框-->
+    <el-dialog :visible.sync="attrbuteVisible" title="属性编辑">
+      <el-form>
+        <el-form-item label="分类">
+          <el-input :disabled="true" v-model="attributeForm.category.label"></el-input>
+        </el-form-item>
+        <el-form-item label="名称">
+          <el-input :disabled="true" v-model="attributeForm.category.label"></el-input>
+        </el-form-item>
+
+      </el-form>
     </el-dialog>
   </div>
 </template>
@@ -99,9 +102,15 @@
   export default {
     data() {
       return {
+        // 属性对话框
+        attrbuteVisible: true,
         // 分类组件
-        categoryCardShow: true,
+        categoryCardShow: false,
+        treeCardVisible: true,
+
         // 分类属性列表
+        treeVisible: false,
+        treeCardSelectNode: null,
         attrsParams: {
           page: 1,
           pagesize: 10
@@ -123,7 +132,7 @@
         formTree: {
           label: '',
           id: '',
-          pid_id: '',
+          pid: '',
           parentLabel: ''
         },
         treedata: [],
@@ -134,6 +143,9 @@
       }
     },
     methods: {
+      wa(data) {
+        console.log(data)
+      },
       featchtreeDate() {
         this.restTree()
         this.treeLoading = true
@@ -145,6 +157,7 @@
       submitForm() {
         if (this.formAction == 'update') {
           const data = {
+            pid: this.formTree.pid,
             label: this.formTree.label,
             id: this.formTree.id
           }
@@ -157,7 +170,7 @@
         } else {
           const data = {
             label: this.formTree.label,
-            pid: this.formTree.pid_id
+            pid: this.formTree.pid
           }
           request.post('/api/admin/shop/category/', data, data.id).then(res => {
             this.$message({
@@ -177,7 +190,6 @@
         if (inner == 'before') {
           data.pid = after.data.pid_id
         }
-        console.log(after, inner)
         request.httpPatch('/api/admin/shop/category/{pk}/', data, data.id).then(res => {
           this.featchtreeDate()
           this.$message({
@@ -188,7 +200,6 @@
       },
       editNode(action) {
         const node = this.$refs.category.currentNode && this.$refs.category.currentNode.node
-        console.log(node)
         if (action === 'update') {
           if (!node) {
             this.$message({
@@ -245,7 +256,6 @@
         this.attributeDialog = true
       },
       cancelEdit(row) {
-        console.log(row)
         row.originalName = row.name
         row.edit = false
         this.$message({
@@ -267,7 +277,16 @@
           message: 'The title has been edited',
           type: 'success'
         })
+      },
+      handleSelectedTree(node) {
+        this.formTree.parentLabel = node.label
+        this.formTree.pid = node.id
+        console.log('parent', this.formTree)
+      },
+      handleEditAttribute(row) {
+        console.log(row)
       }
+
     },
     created() {
       this.featchtreeDate()
@@ -291,7 +310,6 @@
     font-size: 14px;
     padding-right: 8px;
   }
-
     .box-tree {
         padding: 24px;
         border: 1px solid #eee;
@@ -332,7 +350,7 @@
         float: right;
         padding: 10px;
     }
-  .el-dialog{
+  categorydialog .el-dialog{
     width: 600px;
   }
   .action-buttom{
@@ -358,4 +376,5 @@
     right: 15px;
     top: 10px;
   }
+
 </style>
