@@ -2,12 +2,13 @@
   <div class="warp" style="min-width: 1200px">
     <el-container>
       <el-container>
+        <!--分类管理-->
         <el-aside width="300px">
           <div class="box-tree">
             <div class="custom-tree-container">
               <div class="action-buttom">
                 <div style="padding: 10px">分类管理</div>
-                <el-button @click="editNode('add')" size="mini" type="primary" icon="el-icon-circle-plus" circle></el-button>
+                <el-button @click="addNode('add')" size="mini" type="primary" icon="el-icon-circle-plus" circle></el-button>
                 <el-button @click="editNode('update')" size="mini" type="primary" icon="el-icon-edit" circle></el-button>
                 <el-button @click="delNode()" size="mini" type="danger" icon="el-icon-delete" circle></el-button>
               </div>
@@ -31,65 +32,68 @@
                 <el-button @click="handleAddAttribute" size="mini" type="primary" icon="el-icon-circle-plus" circle></el-button>
               </div>
             </div>
-            <!--属性管理-->
-            <el-table :data="attrsData" style="width: 100%">
+            <!--属性列表-->
+            <el-table :data="attrsData" style="width: 100%" size="mini" v-loading="attrTableLoading">
               <el-table-column prop="category_name" label="分类" width="180"></el-table-column>
               <el-table-column prop="name" min-width="300px" label="名称" ></el-table-column>
-              <el-table-column
-                      fixed="right"
-                      label="操作"
-                      width="100">
+              <el-table-column fixed="right" label="操作" width="130">
                 <template slot-scope="scope">
-                  <el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button>
-                  <el-button type="text" size="small">编辑</el-button>
+                  <el-button @click="handleEditAttribute(scope.row)" size="mini" type="primary" icon="el-icon-edit"></el-button>
+                  <el-button @click="handleDelAttribute(scope.row)" size="mini" type="danger" icon="el-icon-delete"></el-button>
                 </template>
               </el-table-column>
             </el-table>
+            <div class="block right">
+              <el-pagination
+                      @size-change="handleSizeChange"
+                      @current-change="handleCurrentChange"
+                      :current-page="attrsParams.page"
+                      :page-size="attrsParams.pagesize"
+                      :page-sizes="[5, 10, 20, 30]"
+                      layout="total, sizes, prev, pager, next, jumper"
+                      :total="total">
+              </el-pagination>
+
+            </div>
           </div>
         </el-main>
         <el-container>
           <el-main>
-            <el-dialog :visible.sync="dialogVisible">
-              <div class="box">
-                <el-form label-width="80px" size="mini">
-                  <el-form-item label="上级分类">
-                    <el-input  v-model="formTree.parentLabel"  @focus="categoryCardShow = true"></el-input>
-                  </el-form-item>
-                  <el-form-item label="分类名称">
-                    <el-input v-model="formTree.label"></el-input>
-                  </el-form-item>
-                  <el-form-item>
-                    <el-button v-if="formAction=='add'" type="primary" @click="submitForm" >添加</el-button>
-                    <el-button v-else type="primary" @click="submitForm" >提交</el-button>
-                  </el-form-item>
-                </el-form>
-              </div>
-            </el-dialog>
           </el-main>
         </el-container>
       </el-container>
     </el-container>
-    <categorycard :show.sync="categoryCardShow" @handleSelectedTree="handleSelectedTree"></categorycard>
-    <el-dialog :visible.sync="treeVisible" custom-class="categorydialog">
-      <div class="box">
+    <!--分类编辑对话框-->
+    <el-dialog :visible.sync="treeVisible" custom-class="categorydialog" title="分类编辑" :center="true">
         <el-form label-width="80px" size="mini">
-          <el-form-item label="分类">
-            <el-input :disabled="true" v-model="attributeForm.category.label"></el-input>
+          <el-form-item label="上级分类">
+            <el-input  v-model="formTree.parentLabel"  @focus="categoryCardShow = true"></el-input>
+            <categorycard :show.sync="categoryCardShow" :data="treedata" @submitNode="handleSelectedTree"></categorycard>
+          </el-form-item>
+          <el-form-item label="分类名称">
+            <el-input v-model="formTree.label"></el-input>
           </el-form-item>
         </el-form>
-      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button size="mini" v-if="formAction=='add'" type="primary" @click="submitForm" >添加</el-button>
+        <el-button size="mini" v-else type="primary" @click="submitForm" >提交</el-button>
+      </span>
     </el-dialog>
     <!--属性编辑对话框-->
-    <el-dialog :visible.sync="attrbuteVisible" title="属性编辑">
+    <el-dialog :visible.sync="attrbuteVisible" title="属性编辑" custom-class="attribute" :center="true" >
       <el-form>
         <el-form-item label="分类">
-          <el-input :disabled="true" v-model="attributeForm.category.label"></el-input>
+          <categorycard :show.sync="attrcategoryCardShow" :data="treedata" @submitNode="handleSelectedTreeAttr"></categorycard>
+          <el-input  v-model="attributeForm.category_name" @focus="attrcategoryCardShow = true"></el-input>
         </el-form-item>
         <el-form-item label="名称">
-          <el-input :disabled="true" v-model="attributeForm.category.label"></el-input>
+          <el-input  v-model="attributeForm.name"></el-input>
         </el-form-item>
-
       </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button size="mini" v-if="attrformAction=='add'" type="primary" @click="submitAttrForm('add')" >添加</el-button>
+        <el-button size="mini" v-else type="primary" @click="submitAttrForm(edit)" >提交</el-button>
+      </span>
     </el-dialog>
   </div>
 </template>
@@ -102,27 +106,25 @@
   export default {
     data() {
       return {
-        // 属性对话框
-        attrbuteVisible: true,
-        // 分类组件
-        categoryCardShow: false,
-        treeCardVisible: true,
-
-        // 分类属性列表
-        treeVisible: false,
+        //分页相关
+        total:0,
+        attrcategoryCardShow:false, //属性选择分类
+        attrformAction: 'update',//属性操作
+        attrbuteVisible: false,// 属性编辑对话框
+        attrTableLoading:true,
+        categoryCardShow: false,// 分类选择分类
+        treeCardVisible: true,//分类选择对话框
+        treeVisible: false, // 分类编辑对话框
         treeCardSelectNode: null,
         attrsParams: {
           page: 1,
           pagesize: 10
         },
         attributeForm: {
-          category: {
-            id: '',
-            label: ''
-          }
+
         },
         attrsData: [],
-        attributeDialog: false,
+
         treeLoading: true,
         dialogVisible: false,
         tempForm: {
@@ -147,21 +149,19 @@
         console.log(data)
       },
       featchtreeDate() {
-        this.restTree()
-        this.treeLoading = true
+        this.restTree();
+        this.treeLoading = true;
         featchCategoryTree().then(res => {
           this.treedata = res.data
-        })
-        this.treeLoading = false
+        });
+        this.treeLoading = false;
+        console.log("刷新数据成功")
       },
       submitForm() {
         if (this.formAction == 'update') {
-          const data = {
-            pid: this.formTree.pid,
-            label: this.formTree.label,
-            id: this.formTree.id
-          }
-          request.httpPatch('/api/admin/shop/category/{pk}/', data, data.id).then(res => {
+          let data = this.formTree;
+          request.httpPatch('/api/admin/shop/category/{pk}/',data , data.id).then(res => {
+            this.featchtreeDate();
             this.$message({
               message: '修改成功',
               type: 'success'
@@ -171,22 +171,47 @@
           const data = {
             label: this.formTree.label,
             pid: this.formTree.pid
-          }
+          };
           request.post('/api/admin/shop/category/', data, data.id).then(res => {
+            this.featchtreeDate();
+            this.$message({
+              message: '添加成功',
+              type: 'success'
+            })
+          });
+        }
+        this.treeVisible = false;
+      },
+      // 属性提交
+      submitAttrForm(action) {
+        console.log(this.attributeForm)
+        if (action == 'edit') {
+          let data = this.attributeForm;
+          request.httpPatch('/api/admin/shop/attribute/{pk}/',data , data.id).then(res => {
+            this.featchtreeDate();
             this.$message({
               message: '修改成功',
               type: 'success'
             })
           })
+        } else {
+          const data = this.attributeForm;
+          request.post('/api/admin/shop/attribute/', data, data.id).then(res => {
+            this.featchtreeDate();
+            this.$message({
+              message: '添加成功',
+              type: 'success'
+            })
+          });
+          this.feathAttributeData()
         }
-        this.dialogVisible = false
-        this.featchtreeDate()
+        this.attrbuteVisible = false;
       },
       handleDrop(before, after, inner) {
         const data = {
           id: before.data.id,
           pid: after.data.id
-        }
+        };
         if (inner == 'before') {
           data.pid = after.data.pid_id
         }
@@ -199,27 +224,26 @@
         })
       },
       editNode(action) {
-        const node = this.$refs.category.currentNode && this.$refs.category.currentNode.node
-        if (action === 'update') {
-          if (!node) {
-            this.$message({
-              message: '请选择节点',
-              type: 'warring'
-            })
-          } else {
-            this.dialogVisible = true
-            this.formAction = action
-            this.formTree = node.data
-            this.formTree.parentLabel = node.parent.label
-          }
+        this.formAction=action;
+        const node = this.$refs.category.currentNode && this.$refs.category.currentNode.node;
+        if (node) {
+          this.treeVisible = true;
+          this.formTree = {
+            id:node.data.id,
+            label:node.label,
+            pid:node.pid,
+            parentLabel:node.parent.label
+          };
         } else {
-        //  create
-          this.dialogVisible = true
-          this.formAction = action
-          this.formTree = {}
-          this.formTree.pid_id = node.data.id
-          this.formTree.parentLabel = node.label
-        }
+          this.$message({
+            message: '请选择节点',
+            type: 'warring'
+          })}
+      },
+      addNode(action) {
+        this.formAction=action;
+        this.treeVisible = true;
+        this.formTree = {}
       },
       delNode() {
         const key = this.$refs.category.getCurrentKey()
@@ -244,16 +268,21 @@
         this.formTree = {}
       },
       feathAttributeData() {
-        request.fetchGet('/api/admin/shop/attribute/', this.attrsParams).then(response => {
-          this.attrsData = response.data.results.map(v => {
-            this.$set(v, 'edit', false)
-            v.originalName = v.name
-            return v
-          })
+        this.attrTableLoading=true;
+        request.get('/api/admin/shop/attribute/', this.attrsParams).then(response => {
+          this.attrsData=response.data.results;
+          this.total=response.data.count;
+          this.attrTableLoading=false
         })
       },
       handleAddAttribute() {
-        this.attributeDialog = true
+        this.attrformAction='add';
+        this.attrbuteVisible = true
+      },
+      handleDelAttribute(row){
+        request.httpDelete('/api/admin/shop/attribute/{pk}/', row.id).then(response => {
+          this.feathAttributeData()
+        })
       },
       cancelEdit(row) {
         row.originalName = row.name
@@ -281,12 +310,27 @@
       handleSelectedTree(node) {
         this.formTree.parentLabel = node.label
         this.formTree.pid = node.id
-        console.log('parent', this.formTree)
+      },
+      //属性编辑选择分类回调
+      handleSelectedTreeAttr(node) {
+        console.log("我是子组件传递过来的",node);
+        this.attributeForm.category=node.id;
+        this.attributeForm.category_name=node.label
       },
       handleEditAttribute(row) {
-        console.log(row)
-      }
+        this.attrformAction='edit'
+        this.attributeForm=row;
+        this.attrbuteVisible=true;
 
+      },
+      handleSizeChange(size){
+        this.attrsParams.pagesize=size;
+        this.feathAttributeData()
+      },
+      handleCurrentChange(page){
+        this.attrsParams.page=page;
+        this.feathAttributeData()
+      }
     },
     created() {
       this.featchtreeDate()
@@ -350,8 +394,11 @@
         float: right;
         padding: 10px;
     }
-  categorydialog .el-dialog{
-    width: 600px;
+  .categorydialog {
+    width: 500px;
+  }
+  .attribute {
+    width: 500px;
   }
   .action-buttom{
     text-align: center;

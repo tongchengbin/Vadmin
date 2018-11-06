@@ -25,12 +25,9 @@ service.interceptors.request.use(config => {
 service.interceptors.response.use((response) => {
   return response
 }, function(error) {
-  console.log(typeof (error))
   if (error.response.status === 302) {
-    console.log('1111111111111111')
     window.location = '/login'
-  } else {
-    return Promise.reject(error)
   }
-})
+  return Promise.reject(error)
+});
 export default service

@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input v-model="listQuery.search" style="width: 200px;"  placeholder="Search"></el-input>
+      <el-input v-model="listQuery.search" style="width: 200px;"></el-input>
       <el-select v-model="listQuery.ispay" placeholder="请选择">
         <el-option
           v-for="item in paytype"
@@ -10,12 +10,12 @@
           :value="item.value">
         </el-option>
       </el-select>
-        <el-button type="primary"  icon="el-icon-search" @click="handleFilter" >Search</el-button>
+        <el-button type="primary"  icon="el-icon-search" @click="handleSearch" ></el-button>
         <el-button type="primary"  icon="el-icon-edit" @click="handleCreate" >添加</el-button>
       </div>
     <div style="width: 100%">
       <el-table :data="list" style="width: 100%" border fit highlight-current-row >
-        <el-table-column prop="email" label="email" ></el-table-column>
+        <el-table-column prop="email" label="邮箱" ></el-table-column>
         <el-table-column prop="url" label="连接"></el-table-column>
         <el-table-column prop="order_num" label="数量" width="70px"></el-table-column>
         <el-table-column prop="Completed" label="已完成" width="70px"></el-table-column>
@@ -33,8 +33,10 @@
             <el-button v-else type="warning">待支付</el-button>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="Actions" width="200">
+        <el-table-column prop="remark" label="备注"></el-table-column>
+        <el-table-column align="center" label="Actions" width="270">
           <template slot-scope="scope">
+            <el-button  type="success" @click="handleTask(scope.row)" size="small" icon="el-icon-circle-check-outline">任务</el-button>
             <el-button  type="success" @click="handleUpdate(scope.row)" size="small" icon="el-icon-circle-check-outline">编辑</el-button>
             <el-button  type="warning" @click="handleDelete(scope.row,scope.$index)" size="small" icon="el-icon-edit">删除</el-button>
           </template>
@@ -66,13 +68,17 @@
         <el-button v-else type="primary" @click="updateData">更新</el-button>
       </div>
     </el-dialog>
+    <el-dialog :visible.sync="taskFormVisible" custom-class="dialog-task">
+
+    </el-dialog>
   </div>
 </template>
 
 <script>
-// import { Message } from 'element-ui'
+import request from '@/api/public'
+import CoreApi from '@/api/CoreApi'
 import Upload from '@/components/Upload/singleImage3'
-import { qiaohuorder, qiaohuUpdate, qiaohuDelete, qiaohuCreate } from '@/api/shop'
+import {  qiaohuDelete, qiaohuCreate } from '@/api/shop'
 export default {
   name: 'goodsedit',
   omponents: {
@@ -81,13 +87,15 @@ export default {
   data() {
     return {
       // paytype: [{ id: 1, name: '已支付' }, { id: 2, name: '待支付' }],
+      //任务对话框
+      taskFormVisible:true,
       list: [],
       total: null,
       listQuery: {
         search: null,
         is_pay: null,
         page: 1,
-        limit: 10
+        pagesize: 10
       },
       ialogStatus: null,
       textMap: {
@@ -116,13 +124,13 @@ export default {
   },
   methods: {
     fetchData() {
-      qiaohuorder(this.listQuery).then(response => {
-        this.list = response.data.results
+      request.get(CoreApi.SHOP_QIAOHUORSER_LIST,this.listQuery).then(response => {
+        this.list = response.data.results;
         this.total = response.data.count
       })
     },
     updateData() {
-      qiaohuUpdate(this.temp).then(response => {
+      request.get(CoreApi.SHOP_QIAOHUORSER_LIST,this.temp).then(response => {
         if (response.status === 200) {
           this.$message({
             message: '操作成功',
@@ -148,20 +156,23 @@ export default {
         this.fetchData()
       })
     },
+    handleTask(row){
+    //  查看任务
+    },
     handleCreate() {
       console.log('fsdfsdf')
       this.dialogStatus = 'create'
       this.dialogFormVisible = true
     },
-    handleFilter() {
-
+    handleSearch() {
+      this.fetchData()
     },
     handleCurrentChange(val) {
       this.listQuery.offset = val * this.listQuery.limit - this.listQuery.limit
       this.fetchData()
     },
     handleSizeChange(val) {
-      this.listQuery.limit = val
+      this.listQuery.pagesize = val;
       this.getList()
     },
     handleUpdate(row) {
@@ -180,3 +191,8 @@ export default {
   }
 }
 </script>
+<style>
+  .dialog-task{
+    width: 90%;
+  }
+</style>

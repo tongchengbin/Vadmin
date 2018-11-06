@@ -6,6 +6,7 @@
                :center="true"
                :show="show"
                @close="$emit('update:show', false)"
+               :modal="false"
     >
       <div>
         <el-tree  v-loading="treeLoading"
@@ -23,6 +24,7 @@
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" size="mini" @click="centerDialogVisible">确 定</el-button>
+        <el-button type="primary" size="mini" @click="noSelect">不选择</el-button>
       </span>
     </el-dialog>
   </div>
@@ -31,22 +33,33 @@
   import { featchCategoryTree } from '@/api/shop'
   export default {
     props: {
+      data: {
+        type: Array,
+        default: []
+      },
       show: {
         type: Boolean,
         default: false
+      },
+      handleSelectedTree: {
+        type: Function,
+        default: null
       }
     },
     watch: {
-      show () {
-        this.visible = this.show;
+      show() {
+        this.visible = this.show
+      },
+      data() {
+        this.treedata=this.data&&[]
       }
     },
     data() {
       return {
         visible: this.show,
-        checkNode:null,
-        treeLoading:{},
-        treedata:[],
+        checkNode: null,
+        treeLoading: false,
+        treedata: []
       }
     },
     methods: {
@@ -57,17 +70,27 @@
         });
         this.treeLoading = false
       },
+      noSelect() {
+        this.$emit('submitNode', {id:null,label:null});
+        this.$emit('update:show', false)
+      },
       centerDialogVisible() {
-        let node = this.$refs.category.currentNode && this.$refs.category.currentNode.node;
-        this.$emit('handleSelectedTree',node.data);
+        const node = this.$refs.category.currentNode && this.$refs.category.currentNode.node;
+        if(node){
+          this.$emit('submitNode', node.data);
+        }
         this.$emit('update:show', false)
       }
     },
     computed: {
     },
     mounted() {
-      this.featchtreeDate()
-      this.dialogVisible=this.categoryCardShow
+      console.log(this.handleSelectedTree)
+      if(this.data){
+        this.treedata=this.data
+      }else{
+        this.featchtreeDate()
+      }
     },
     components: {
     },

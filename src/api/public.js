@@ -2,7 +2,7 @@
 import request from '@/utils/request'
 
 export default {
-  fetchGet(url, params, pk) {
+  get(url, params, pk) {
     url = pk ? url.replace('{pk}', pk) : url
     console.log(url)
     return request({
@@ -12,19 +12,19 @@ export default {
     })
   },
   post(url, data = {}, pk) {
-    url = pk ? url.replace('{pk}', pk) : url
+    url = pk ? url.replace('{pk}', pk) : url;
     return request({
       url,
       method: 'post',
       data
     })
   },
-  httpUpdate(url, params = {}, pk) {
-    url = pk ? url.replace('{pk}', pk) : url
+  put(url, data, pk) {
+    url = pk ? url.replace('{pk}', pk) : url;
     return request({
       url,
       method: 'put',
-      params
+      data
     })
   },
   httpDelete(url, pk) {
