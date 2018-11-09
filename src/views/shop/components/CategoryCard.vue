@@ -51,7 +51,7 @@
         this.visible = this.show
       },
       data() {
-        this.treedata=this.data&&[]
+        this.treedata = this.data && []
       }
     },
     data() {
@@ -67,17 +67,17 @@
         this.treeLoading = true
         featchCategoryTree().then(res => {
           this.treedata = res.data
-        });
+        })
         this.treeLoading = false
       },
       noSelect() {
-        this.$emit('submitNode', {id:null,label:null});
+        this.$emit('submitNode', { id: null, label: null })
         this.$emit('update:show', false)
       },
       centerDialogVisible() {
-        const node = this.$refs.category.currentNode && this.$refs.category.currentNode.node;
-        if(node){
-          this.$emit('submitNode', node.data);
+        const node = this.$refs.category.currentNode && this.$refs.category.currentNode.node
+        if (node) {
+          this.$emit('submitNode', node.data)
         }
         this.$emit('update:show', false)
       }
@@ -86,9 +86,9 @@
     },
     mounted() {
       console.log(this.handleSelectedTree)
-      if(this.data){
-        this.treedata=this.data
-      }else{
+      if (this.data) {
+        this.treedata = this.data
+      } else {
         this.featchtreeDate()
       }
     },

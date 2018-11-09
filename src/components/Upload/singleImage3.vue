@@ -1,7 +1,14 @@
 <template>
   <div class="upload-container">
-    <el-upload class="image-uploader" :data="dataObj" drag :multiple="false" :show-file-list="false" action="https://httpbin.org/post"
-      :on-success="handleImageScucess">
+    <el-upload class="image-uploader"
+               :data="dataObj"
+               drag
+               :multiple="false"
+               :show-file-list="false"
+               action="http://up.qiniup.com"
+               :before-upload="beforeUpload"
+               bucket="public"
+                :on-success="handleImageScucess">
       <i class="el-icon-upload"></i>
       <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
     </el-upload>
@@ -25,7 +32,8 @@
 </template>
 
 <script>
-import { getToken } from '@/api/qiniu'
+import request from '@/api/public'
+import CoreApi from '@/api/CoreApi'
 
 export default {
   name: 'singleImageUpload3',
@@ -43,6 +51,9 @@ export default {
       dataObj: { token: '', key: '' }
     }
   },
+  mounted() {
+
+  },
   methods: {
     rmImage() {
       this.emitInput('')
@@ -51,20 +62,19 @@ export default {
       this.$emit('input', val)
     },
     handleImageScucess(file) {
-      this.emitInput(file.files.file)
+      this.emitInput(this.domain_url+file.key)
     },
-    beforeUpload() {
-      const _self = this
+    beforeUpload(file) {
+      const _self = this;
       return new Promise((resolve, reject) => {
-        getToken().then(response => {
-          const key = response.data.qiniu_key
-          const token = response.data.qiniu_token
-          _self._data.dataObj.token = token
-          _self._data.dataObj.key = key
-          this.tempUrl = response.data.qiniu_url
+        request.get(CoreApi.QINIU_TOKEN,{}).then(response => {
+          const token = response.data.token;
+          _self._data.dataObj.token = token;
+          _self._data.dataObj.key = file.name;
+          this.domain_url = response.data.domain_url
           resolve(true)
         }).catch(err => {
-          console.log(err)
+          console.log(err);
           reject(false)
         })
       })

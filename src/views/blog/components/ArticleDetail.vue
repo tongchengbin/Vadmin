@@ -1,58 +1,37 @@
 <template>
   <div class="createPost-container">
-    <sticky :className="'sub-navbar '+postForm.status">
-      <el-select v-model="postForm.category" placeholder="分类">
-        <el-option
-          v-for="item in options"
-          :key="item.id"
-          :label="item.name"
-          :value="item.id">
-        </el-option>
-      </el-select>
-      <el-button v-loading="loading" style="margin-left: 10px;" type="success" @click="submitForm">发布
-      </el-button>
+    <header class="header">
+      <el-button  v-loading="loading" style="margin-left: 10px;" type="success" @click="submitForm">发布</el-button>
       <el-button v-loading="loading" type="warning" >草稿</el-button>
-    </sticky>
-    <Upload v-model="postForm.summary_img" />
+    </header>
     <div>
-      <el-form class="form-container" :model="postForm"  ref="postForm">
+      <el-form class="form-container" :model="postForm"  ref="postForm" size="mini">
         <div class="createPost-main-container">
-          <el-row>
-            <el-col :span="24">
-              <el-form-item style="margin-bottom: 40px;" prop="title">
-                <MDinput name="name" v-model="postForm.title" required :maxlength="100">
-                  标题
-                </MDinput>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-form-item style="margin-bottom: 40px;" label-width="45px" label="摘要:">
-            <el-input type="textarea" class="article-textarea" :rows="1" autosize placeholder="请输入内容" v-model="postForm.content_short">
-            </el-input>
-            <span class="word-counter" v-show="contentShortLength">{{contentShortLength}}字</span>
-          </el-form-item>
+          <textarea class="titleInput Input-wrapper" placeholder="请输入标题（最多 50 个字）" style="height: 44px;"></textarea>
+          <textarea class="descInput" placeholder="请输入标题简介" style="height: 44px;"></textarea>
+          <span class="line-edit"></span>
           <div class="editor-container">
-            <!--<Tinymce :height=400 ref="editor" v-model="postForm.content" />-->
-            <markdown-editor id="contentEditor" v-model="postForm.content" :height="300" :zIndex="20"></markdown-editor>
+            <markdown-editor v-model="postForm.content"></markdown-editor>
+          </div>
+          <div style="margin-bottom: 20px;">
+            <Upload v-model="postForm.summary_img"/>
           </div>
         </div>
       </el-form>
     </div>
-
-
   </div>
+
 </template>
 
 <script>
-import MarkdownEditor from '@/components/MarkdownEditor'
+  import MarkdownEditor from '@/components/MarkdownEditor'
+// import MarkdownEditor from '@/components/MarkdownEditor2'
 import Tinymce from '@/components/Tinymce'
-import Upload from '@/components/Upload/singleImage2'
-import MDinput from '@/components/MDinput'
+import Upload from '@/components/Upload/singleImage3'
 import Multiselect from 'vue-multiselect'// 使用的一个多选框组件，element-ui的select不能满足所有需求
 import 'vue-multiselect/dist/vue-multiselect.min.css'// 多选框组件css
 import Sticky from '@/components/Sticky' // 粘性header组件
 import { fetchArticle, feachCategory, updateArticle, createArticle } from '@/api/blog'
-import Warning from './Warning'
 import { CommentDropdown, PlatformDropdown, SourceUrlDropdown } from './Dropdown'
 
 const defaultForm = {
@@ -71,7 +50,7 @@ const defaultForm = {
 
 export default {
   name: 'articleDetail',
-  components: { Tinymce, MDinput, Upload, Multiselect, Sticky, Warning, CommentDropdown, PlatformDropdown, SourceUrlDropdown, MarkdownEditor },
+  components: { Tinymce, Upload, Multiselect, Sticky, CommentDropdown, PlatformDropdown, SourceUrlDropdown, MarkdownEditor },
   props: {
     isEdit: {
       type: Boolean,
@@ -147,10 +126,13 @@ export default {
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
-@import "src/styles/mixin.scss";
-.createPost-container {
+
+  @import "src/styles/mixin.scss";
+  .createPost-container {
   position: relative;
   .createPost-main-container {
+    margin: auto;
+    width: 900px;
     padding: 40px 45px 20px 50px;
     .postInfo-container {
       position: relative;
@@ -178,5 +160,67 @@ export default {
     right: -10px;
     top: 0px;
   }
+    .titleInput{
+      text-align: center;
+      margin: auto;
+      height: 44px;
+      min-height: 44px;
+      display: block;
+      width: 800px;
+      border: 0;
+      font-size: 32px;
+      line-height: 1.4;
+      font-weight: 600;
+      font-synthesis: style;
+      outline: none;
+      box-shadow: none;
+      resize:none;
+      overflow:hidden;
+    }
+    .descInput{
+      text-align: center;
+      padding: 20px;
+      margin: auto;
+      height: 30px;
+      min-height: 30px;
+      display: block;
+      width: 800px;
+      border: 0;
+      font-size: 14px;
+      font-weight: 600;
+      font-synthesis: style;
+      outline: none;
+      box-shadow: none;
+      resize:none;
+      overflow:hidden;
+    }
+    .line-edit{
+      padding: 40px;
+    }
+    .header{
+      width: 100%;
+      border-bottom:1px solid transparent;
+      border-color:rgba(0,0,0,.08);
+      padding-top: 5px;
+      padding-bottom: 5px;
+      float:right;
+      button{
+        float: right;
+        margin-right: 0;
+      }
+
+    }
+    .editor-toolbar{
+      opacity:0.9;
+      border: 0px solid #bbb;
+      width: 800px;
+      margin: auto;
+    }
+    .editor-toolbar{
+      opacity:0.9;
+      border: 0px solid #bbb!important;
+      width: 800px;
+      margin: auto;
+    }
 }
 </style>

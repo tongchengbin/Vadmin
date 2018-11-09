@@ -1,7 +1,9 @@
 <template>
   <div class="simplemde-container" :style="{height:height+'px',zIndex:zIndex}">
-    <textarea :id="id">
-    </textarea>
+    <div class="editor-custom-btn-container">
+      <editorImage color="#1890ff" class="editor-upload-btn" @successCBK="imageSuccessCBK"></editorImage>
+    </div>
+    <textarea :id="id"></textarea>
   </div>
 </template>
 
@@ -9,6 +11,7 @@
 import 'font-awesome/css/font-awesome.min.css'
 import 'simplemde/dist/simplemde.min.css'
 import SimpleMDE from 'simplemde'
+import editorImage from './components/editorImage'
 
 export default {
   name: 'simplemde-md',
@@ -27,7 +30,7 @@ export default {
     },
     height: {
       type: Number,
-      default: 150
+      default: 500
     },
     zIndex: {
       type: Number,
@@ -40,9 +43,11 @@ export default {
   data() {
     return {
       simplemde: null,
-      hasChange: false
+      hasChange: false,
+      markdownId:this.id || 'vue-tinymce-' + +new Date(),
     }
   },
+  components: { editorImage },
   watch: {
     value(val) {
       if (val === this.simplemde.value() && !this.hasChange) return
@@ -75,14 +80,31 @@ export default {
   destroyed() {
     this.simplemde.toTextArea()
     this.simplemde = null
+  },
+  methods: {
+  imageSuccessCBK(arr) {
+    const _this = this
+    arr.forEach(v => {
+      window.tinymce.get(_this.tinymceId).insertContent(`<img class="wscnph" src="${v.url}" >`)
+    })
+  }
   }
 }
 </script>
 
 <style scoped>
-.simplemde-container>>>.CodeMirror {
+
+  .editor-toolbar{
+    opacity:0.9;
+    border: 0 !important;
+    width: 800px;
+    margin: auto;
+  }
+.simplemde-container >>>.CodeMirror {
   min-height: 150px;
   line-height: 20px;
+  border:0px solid #ddd;
+  width: 800px;
 }
 
 .simplemde-container>>>.CodeMirror-scroll {
@@ -113,4 +135,13 @@ export default {
 .simplemde-container >>> .CodeMirror-fullscreen {
   z-index: 1003;
 }
+  .editor-upload-btn{
+    position: relative;
+    top: 2px;
+    margin-top: 2px;
+    float: right;
+    z-index: 19;
+  }
+
+
 </style>

@@ -11,3 +11,12 @@ export default {
 }
 </script>
 
+<style>
+  .editor-toolbar{
+    opacity:0.9;
+    border: 0 !important;
+    width: 800px;
+    margin: auto;
+  }
+
+</style>

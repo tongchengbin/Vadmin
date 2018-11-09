@@ -18,7 +18,7 @@
         <el-table-column prop="email" label="邮箱" ></el-table-column>
         <el-table-column prop="url" label="连接"></el-table-column>
         <el-table-column prop="order_num" label="数量" width="70px"></el-table-column>
-        <el-table-column prop="Completed" label="已完成" width="70px"></el-table-column>
+        <el-table-column prop="completed" label="已完成" width="70px"></el-table-column>
         <el-table-column prop="order_price" label="金额" width="70px"></el-table-column>
         <el-table-column prop="pay_type" label="支付方式" width="80px"></el-table-column>
         <el-table-column prop="source" label="来源" width="80px"></el-table-column>
@@ -58,6 +58,9 @@
         <el-form-item label="数量" prop="order_num">
           <el-input-number v-model="temp.order_num"></el-input-number>
         </el-form-item>
+        <el-form-item label="备注" prop="remark">
+          <el-input v-model="temp.remark"></el-input>
+        </el-form-item>
         <el-form-item label="支付状态">
           <el-switch v-model="temp.is_pay"></el-switch>
         </el-form-item>
@@ -68,8 +71,28 @@
         <el-button v-else type="primary" @click="updateData">更新</el-button>
       </div>
     </el-dialog>
+    <!--查看任务-->
     <el-dialog :visible.sync="taskFormVisible" custom-class="dialog-task">
-
+      <el-table :data="taskdata" style="width: 100%" border fit highlight-current-row >
+        <el-table-column prop="username" label="用户名" width="180"></el-table-column>
+        <el-table-column  label="索取结果">
+          <template slot-scope="scope">
+            <el-button v-if=scope.row.is_ok type="primary">索取成功</el-button>
+            <el-button v-else type="warning">索取失败</el-button>
+          </template>
+        </el-table-column>
+        <el-table-column prop="msg" label="执行消息" width="msg"></el-table-column>
+        <el-table-column width="180px" align="center" label="申请时间">
+          <template slot-scope="scope">
+            <span>{{scope.row.ctime | parseTime('{y}-{m}-{d} {h}:{i}')}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column width="180px" align="center" label="执行时间">
+          <template slot-scope="scope">
+            <span>{{scope.row.mtime | parseTime('{y}-{m}-{d} {h}:{i}')}}</span>
+          </template>
+        </el-table-column>
+      </el-table>
     </el-dialog>
   </div>
 </template>
@@ -77,18 +100,18 @@
 <script>
 import request from '@/api/public'
 import CoreApi from '@/api/CoreApi'
-import Upload from '@/components/Upload/singleImage3'
-import {  qiaohuDelete, qiaohuCreate } from '@/api/shop'
+import { qiaohuDelete, qiaohuCreate } from '@/api/shop'
 export default {
   name: 'goodsedit',
-  omponents: {
-    Upload
-  },
   data() {
     return {
+      task_params:{
+        order:null,
+      },
       // paytype: [{ id: 1, name: '已支付' }, { id: 2, name: '待支付' }],
-      //任务对话框
-      taskFormVisible:true,
+      // 任务对话框
+      taskdata:[],
+      taskFormVisible: false,
       list: [],
       total: null,
       listQuery: {
@@ -124,13 +147,13 @@ export default {
   },
   methods: {
     fetchData() {
-      request.get(CoreApi.SHOP_QIAOHUORSER_LIST,this.listQuery).then(response => {
-        this.list = response.data.results;
+      request.get(CoreApi.SHOP_QIAOHUORSER_LIST, this.listQuery).then(response => {
+        this.list = response.data.results
         this.total = response.data.count
       })
     },
     updateData() {
-      request.get(CoreApi.SHOP_QIAOHUORSER_LIST,this.temp).then(response => {
+      request.put(CoreApi.SHOP_QIAOHUORSER_PK, this.temp,this.temp.id).then(response => {
         if (response.status === 200) {
           this.$message({
             message: '操作成功',
@@ -147,17 +170,22 @@ export default {
       })
     },
     createData() {
-      qiaohuCreate(this.temp).then(response => {
+      request.post(CoreApi.SHOP_QIAOHUORSER_LIST,this.temp).then(res => {
         this.$message({
           message: '添加成功',
           type: 'success'
-        })
-        this.dialogFormVisible = false
+        });
+        this.dialogFormVisible = false;
         this.fetchData()
       })
     },
-    handleTask(row){
+    handleTask(row) {
     //  查看任务
+      this.taskFormVisible=true;
+      this.task_params.order=row.id
+      request.get(CoreApi.SHOP_QIAOHUTASK_LIST,this.task_params).then(res=>{
+        this.taskdata=res.data.results
+      })
     },
     handleCreate() {
       console.log('fsdfsdf')
@@ -172,7 +200,7 @@ export default {
       this.fetchData()
     },
     handleSizeChange(val) {
-      this.listQuery.pagesize = val;
+      this.listQuery.pagesize = val
       this.getList()
     },
     handleUpdate(row) {
@@ -193,6 +221,6 @@ export default {
 </script>
 <style>
   .dialog-task{
-    width: 90%;
+    width: 1000px;
   }
 </style>

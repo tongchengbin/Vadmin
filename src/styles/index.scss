@@ -5,6 +5,7 @@
 @import './sidebar.scss';
 @import './btn.scss';
 
+
 body {
   height: 100%;
   -moz-osx-font-smoothing: grayscale;
@@ -190,4 +191,7 @@ code {
 
 .multiselect--active {
   z-index: 1000 !important;
+}
+.editor-toolbar{
+
 }

@@ -106,14 +106,14 @@
   export default {
     data() {
       return {
-        //分页相关
-        total:0,
-        attrcategoryCardShow:false, //属性选择分类
-        attrformAction: 'update',//属性操作
-        attrbuteVisible: false,// 属性编辑对话框
-        attrTableLoading:true,
-        categoryCardShow: false,// 分类选择分类
-        treeCardVisible: true,//分类选择对话框
+        // 分页相关
+        total: 0,
+        attrcategoryCardShow: false, // 属性选择分类
+        attrformAction: 'update', // 属性操作
+        attrbuteVisible: false, // 属性编辑对话框
+        attrTableLoading: true,
+        categoryCardShow: false, // 分类选择分类
+        treeCardVisible: true, // 分类选择对话框
         treeVisible: false, // 分类编辑对话框
         treeCardSelectNode: null,
         attrsParams: {
@@ -149,19 +149,19 @@
         console.log(data)
       },
       featchtreeDate() {
-        this.restTree();
-        this.treeLoading = true;
+        this.restTree()
+        this.treeLoading = true
         featchCategoryTree().then(res => {
           this.treedata = res.data
-        });
-        this.treeLoading = false;
-        console.log("刷新数据成功")
+        })
+        this.treeLoading = false
+        console.log('刷新数据成功')
       },
       submitForm() {
         if (this.formAction == 'update') {
-          let data = this.formTree;
-          request.httpPatch('/api/admin/shop/category/{pk}/',data , data.id).then(res => {
-            this.featchtreeDate();
+          const data = this.formTree
+          request.httpPatch('/api/admin/shop/category/{pk}/', data, data.id).then(res => {
+            this.featchtreeDate()
             this.$message({
               message: '修改成功',
               type: 'success'
@@ -171,47 +171,47 @@
           const data = {
             label: this.formTree.label,
             pid: this.formTree.pid
-          };
+          }
           request.post('/api/admin/shop/category/', data, data.id).then(res => {
-            this.featchtreeDate();
+            this.featchtreeDate()
             this.$message({
               message: '添加成功',
               type: 'success'
             })
-          });
+          })
         }
-        this.treeVisible = false;
+        this.treeVisible = false
       },
       // 属性提交
       submitAttrForm(action) {
         console.log(this.attributeForm)
         if (action == 'edit') {
-          let data = this.attributeForm;
-          request.httpPatch('/api/admin/shop/attribute/{pk}/',data , data.id).then(res => {
-            this.featchtreeDate();
+          const data = this.attributeForm
+          request.httpPatch('/api/admin/shop/attribute/{pk}/', data, data.id).then(res => {
+            this.featchtreeDate()
             this.$message({
               message: '修改成功',
               type: 'success'
             })
           })
         } else {
-          const data = this.attributeForm;
+          const data = this.attributeForm
           request.post('/api/admin/shop/attribute/', data, data.id).then(res => {
-            this.featchtreeDate();
+            this.featchtreeDate()
             this.$message({
               message: '添加成功',
               type: 'success'
             })
-          });
+          })
           this.feathAttributeData()
         }
-        this.attrbuteVisible = false;
+        this.attrbuteVisible = false
       },
       handleDrop(before, after, inner) {
         const data = {
           id: before.data.id,
           pid: after.data.id
-        };
+        }
         if (inner == 'before') {
           data.pid = after.data.pid_id
         }
@@ -224,25 +224,26 @@
         })
       },
       editNode(action) {
-        this.formAction=action;
-        const node = this.$refs.category.currentNode && this.$refs.category.currentNode.node;
+        this.formAction = action
+        const node = this.$refs.category.currentNode && this.$refs.category.currentNode.node
         if (node) {
-          this.treeVisible = true;
+          this.treeVisible = true
           this.formTree = {
-            id:node.data.id,
-            label:node.label,
-            pid:node.pid,
-            parentLabel:node.parent.label
-          };
+            id: node.data.id,
+            label: node.label,
+            pid: node.pid,
+            parentLabel: node.parent.label
+          }
         } else {
           this.$message({
             message: '请选择节点',
             type: 'warring'
-          })}
+          })
+        }
       },
       addNode(action) {
-        this.formAction=action;
-        this.treeVisible = true;
+        this.formAction = action
+        this.treeVisible = true
         this.formTree = {}
       },
       delNode() {
@@ -268,18 +269,18 @@
         this.formTree = {}
       },
       feathAttributeData() {
-        this.attrTableLoading=true;
+        this.attrTableLoading = true
         request.get('/api/admin/shop/attribute/', this.attrsParams).then(response => {
-          this.attrsData=response.data.results;
-          this.total=response.data.count;
-          this.attrTableLoading=false
+          this.attrsData = response.data.results
+          this.total = response.data.count
+          this.attrTableLoading = false
         })
       },
       handleAddAttribute() {
-        this.attrformAction='add';
+        this.attrformAction = 'add'
         this.attrbuteVisible = true
       },
-      handleDelAttribute(row){
+      handleDelAttribute(row) {
         request.httpDelete('/api/admin/shop/attribute/{pk}/', row.id).then(response => {
           this.feathAttributeData()
         })
@@ -311,24 +312,23 @@
         this.formTree.parentLabel = node.label
         this.formTree.pid = node.id
       },
-      //属性编辑选择分类回调
+      // 属性编辑选择分类回调
       handleSelectedTreeAttr(node) {
-        console.log("我是子组件传递过来的",node);
-        this.attributeForm.category=node.id;
-        this.attributeForm.category_name=node.label
+        console.log('我是子组件传递过来的', node)
+        this.attributeForm.category = node.id
+        this.attributeForm.category_name = node.label
       },
       handleEditAttribute(row) {
-        this.attrformAction='edit'
-        this.attributeForm=row;
-        this.attrbuteVisible=true;
-
+        this.attrformAction = 'edit'
+        this.attributeForm = row
+        this.attrbuteVisible = true
       },
-      handleSizeChange(size){
-        this.attrsParams.pagesize=size;
+      handleSizeChange(size) {
+        this.attrsParams.pagesize = size
         this.feathAttributeData()
       },
-      handleCurrentChange(page){
-        this.attrsParams.page=page;
+      handleCurrentChange(page) {
+        this.attrsParams.page = page
         this.feathAttributeData()
       }
     },

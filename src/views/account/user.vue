@@ -103,137 +103,135 @@
   import CoreApi from '@/api/CoreApi'
   import { mapGetters } from 'vuex'
 
-
 export default {
   name: 'user',
   data() {
-    return {
-      list: null,
-      total: 0,
-      listLoading: true,
-      listQuery: {
-        search: null,
-        page: 1,
-        limit: 10
-      },
-      dialogStatus: 'update',
-      dialogFormVisible: false,
-      RolesData: [],
-      formData: {
-        email: null,
-        id: null,
-        username: null,
-        roles: [],
-        is_admin: null,
-        is_superuser: null,
-        confirm_password: null,
-        password: null
+      return {
+        list: null,
+        total: 0,
+        listLoading: true,
+        listQuery: {
+          search: null,
+          page: 1,
+          limit: 10
+        },
+        dialogStatus: 'update',
+        dialogFormVisible: false,
+        RolesData: [],
+        formData: {
+          email: null,
+          id: null,
+          username: null,
+          roles: [],
+          is_admin: null,
+          is_superuser: null,
+          confirm_password: null,
+          password: null
+        }
       }
-    }
   },
   filters: {
-    statusFilter(status) {
-      const statusMap = {
-        published: 'success',
-        draft: 'info',
-        deleted: 'danger'
+      statusFilter(status) {
+        const statusMap = {
+          published: 'success',
+          draft: 'info',
+          deleted: 'danger'
+        }
+        return statusMap[status]
       }
-      return statusMap[status]
-    }
   },
   computed: {
-    ...mapGetters([
-      'roles'
-    ])
+      ...mapGetters([
+        'roles'
+      ])
   },
   created() {
-    this.getList();
-    this.getRoleData()
+      this.getList()
+  this.getRoleData()
   },
   methods: {
-    getList() {
-      this.listLoading = true;
-      request.get(CoreApi.ACCOUNT_USER_LIST, this.listQuery).then(response => {
-        this.list = response.data.results;
-        this.total = response.data.count;
-        this.listLoading = false
-      })
-    },
-    userDelete(row) {
-      request.httpDelete(CoreApi.ACCOUNT_USER_PK, row.id).then(res => {
-        this.getList();
-      })
-    },
-    getRoleData() {
-      request.get(CoreApi.ACCOUNT_ROLE_GET, {}).then(response => {
-        response.data.forEach(item => {
-          this.RolesData.push({
-            'label': item.name, 'key': item.id
+      getList() {
+        this.listLoading = true
+        request.get(CoreApi.ACCOUNT_USER_LIST, this.listQuery).then(response => {
+          this.list = response.data.results
+          this.total = response.data.count
+          this.listLoading = false
+        })
+      },
+      userDelete(row) {
+        request.httpDelete(CoreApi.ACCOUNT_USER_PK, row.id).then(res => {
+          this.getList()
+        })
+      },
+      getRoleData() {
+        request.get(CoreApi.ACCOUNT_ROLE_GET, {}).then(response => {
+          response.data.forEach(item => {
+            this.RolesData.push({
+              'label': item.name, 'key': item.id
+            })
           })
         })
-      })
-    },
-    handleSizeChange(val) {
-      this.listQuery.limit = val
-      this.getList()
-    },
-    handleCurrentChange(val) {
-      this.listQuery.page = val
-      this.getList()
-    },
-    handleFilter() {
-      this.getList()
-    },
-    handleCreate() {
-      this.dialogStatus = 'add';
-      this.dialogFormVisible = true;
-      this.restFormData()
-    },
-    restFormData() {
-      this.formData = {
-        email: null,
-        id: null,
-        username: null,
-        roles: [],
-        is_admin: null,
-        is_superuser: null
-      }
-    },
-    handleUpdate(row) {
-      this.dialogStatus = 'edit';
-      this.formData = row;
-      this.dialogFormVisible = true
-    },
-    updateData() {
-      if (this.dialogStatus === 'add') {
-        request.post(CoreApi.ACCOUNT_USER_LIST,this.formData).then(res => {
-          this.$message({
-            message: '添加成功',
-            type: 'success'
-          });
-          this.dialogFormVisible = false;
-          this.fetchData()
-        }).catch(res =>{
-          if(res.response.status===400){
+      },
+      handleSizeChange(val) {
+        this.listQuery.limit = val
+        this.getList()
+      },
+      handleCurrentChange(val) {
+        this.listQuery.page = val
+        this.getList()
+      },
+      handleFilter() {
+        this.getList()
+      },
+      handleCreate() {
+        this.dialogStatus = 'add'
+        this.dialogFormVisible = true
+        this.restFormData()
+      },
+      restFormData() {
+        this.formData = {
+          email: null,
+          id: null,
+          username: null,
+          roles: [],
+          is_admin: null,
+          is_superuser: null
+        }
+      },
+      handleUpdate(row) {
+        this.dialogStatus = 'edit'
+        this.formData = row
+        this.dialogFormVisible = true
+      },
+      updateData() {
+        if (this.dialogStatus === 'add') {
+          request.post(CoreApi.ACCOUNT_USER_LIST, this.formData).then(res => {
             this.$message({
-              message: '添加失败',
-              type: 'error'
-            });
-          }
-        })
-      } else {
-        console.log('edit');
-        request.put(CoreApi.ACCOUNT_USER_PK, this.formData,this.formData.id).then(res => {
-          this.$message({
-            message: '操作成功',
-            type: 'success'
-          });
-          this.dialogFormVisible = false;
-          this.fetchData()
-
-        })
+              message: '添加成功',
+              type: 'success'
+            })
+            this.dialogFormVisible = false
+            this.fetchData()
+          }).catch(res => {
+            if (res.response.status === 400) {
+              this.$message({
+                message: '添加失败',
+                type: 'error'
+              })
+            }
+          })
+        } else {
+          console.log('edit')
+          request.put(CoreApi.ACCOUNT_USER_PK, this.formData, this.formData.id).then(res => {
+            this.$message({
+              message: '操作成功',
+              type: 'success'
+            })
+            this.dialogFormVisible = false
+            this.fetchData()
+          })
+        }
       }
-    }
   }
 }
 </script>

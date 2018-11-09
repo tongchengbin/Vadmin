@@ -12,7 +12,7 @@ export default {
     })
   },
   post(url, data = {}, pk) {
-    url = pk ? url.replace('{pk}', pk) : url;
+    url = pk ? url.replace('{pk}', pk) : url
     return request({
       url,
       method: 'post',
@@ -20,7 +20,7 @@ export default {
     })
   },
   put(url, data, pk) {
-    url = pk ? url.replace('{pk}', pk) : url;
+    url = pk ? url.replace('{pk}', pk) : url
     return request({
       url,
       method: 'put',

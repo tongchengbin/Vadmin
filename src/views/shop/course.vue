@@ -64,8 +64,8 @@
 </template>
 
 <script>
-import { courselist, courseUpdate } from '@/api/shop'
-import { Message } from 'element-ui'
+  import request from '@/api/public'
+  import CoreApi from '@/api/CoreApi'
 export default {
   name: 'sourse',
   data() {
@@ -99,15 +99,12 @@ export default {
   },
   methods: {
     featchData() {
-      if (!this.Loading) {
-        this.Loading = true
-        courselist(this.listQuery).then(response => {
-          console.log(response)
-          this.list = response.data.results
-          this.total = response.data.count
-          this.Loading = false
-        })
-      }
+      this.Loading=true;
+      request.get(CoreApi.SHOP_COURSE_LIST,this.listQuery).then(response => {
+        this.list = response.data.results;
+        this.total = response.data.count;
+        this.Loading = false
+      })
     },
     handleSizeChange(val) {
       this.listQuery.limit = val

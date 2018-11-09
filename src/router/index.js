@@ -56,7 +56,7 @@ export const asyncRouterMap = [
       roles: ['superuser', 'admin']
     },
     children: [
-      { path: 'user', component: () => import('@/views/account/user'), name: 'user', noCache: true, meta: { title: '用户', icon: 'user' }},
+      { path: 'user', component: () => import('@/views/account/user'), name: 'user', noCache: true, meta: { title: '用户', icon: 'user' }}
       // { path: 'role', component: () => import('@/views/account/role'), name: 'role', meta: { title: '角色', icon: 'role' }},
       // { path: 'permission', component: () => import('@/views/account/permission'), name: 'permission', meta: { title: '权限', icon: '权限资源' }}
     ]
@@ -67,7 +67,7 @@ export const asyncRouterMap = [
     name: 'shop',
     meta: { title: '商品管理', icon: 'shopify' },
     children: [
-      // { path: 'course', name: 'course', component: () => import('@/views/shop/course'), meta: { title: '课程', icon: 'course' }},
+      { path: 'course', name: 'course', component: () => import('@/views/shop/course'), meta: { title: '课程', icon: 'course' }},
       { path: 'category', name: 'category', component: () => import('@/views/shop/category'), meta: { title: '分类', icon: 'form' }},
       // { path: 'funserver', name: 'FunServer', component: () => import('@/views/shop/funlist'), meta: { title: 'funserver', icon: 'form' }},
       // { path: 'imoocedit/:id(\\d+)', name: 'imoocedit', hidden: true, component: () => import('@/views/shop/imoocedit'), meta: { title: 'Edit', icon: 'tree' }},

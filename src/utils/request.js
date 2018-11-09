@@ -29,5 +29,5 @@ service.interceptors.response.use((response) => {
     window.location = '/login'
   }
   return Promise.reject(error)
-});
+})
 export default service
