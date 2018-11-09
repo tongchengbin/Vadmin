@@ -30,7 +30,7 @@ export default {
     },
     height: {
       type: Number,
-      default: 500
+      default: 150
     },
     zIndex: {
       type: Number,
@@ -44,7 +44,7 @@ export default {
     return {
       simplemde: null,
       hasChange: false,
-      markdownId:this.id || 'vue-tinymce-' + +new Date(),
+      markdownId:this.id
     }
   },
   components: { editorImage },

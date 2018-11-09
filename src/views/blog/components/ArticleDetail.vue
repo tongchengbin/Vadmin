@@ -11,7 +11,7 @@
           <textarea class="descInput" placeholder="请输入标题简介" style="height: 44px;"></textarea>
           <span class="line-edit"></span>
           <div class="editor-container">
-            <markdown-editor v-model="postForm.content"></markdown-editor>
+            <markdown-editor id="contentEditor" ref="contentEditor" v-model="defaultForm.content" :height="300"></markdown-editor>
           </div>
           <div style="margin-bottom: 20px;">
             <Upload v-model="postForm.summary_img"/>
@@ -34,19 +34,7 @@ import Sticky from '@/components/Sticky' // 粘性header组件
 import { fetchArticle, feachCategory, updateArticle, createArticle } from '@/api/blog'
 import { CommentDropdown, PlatformDropdown, SourceUrlDropdown } from './Dropdown'
 
-const defaultForm = {
-  status: 1,
-  title: '', // 文章题目
-  content: '', // 文章内容
-  summary: '', // 文章摘要
-  summary_img: '', // 文章图片
-  category: '', // 文章分类
-  display_time: undefined, // 前台展示时间
-  id: undefined,
-  article_from: null,
-  is_top: false,
-  category_id: null
-}
+
 
 export default {
   name: 'articleDetail',
@@ -59,8 +47,21 @@ export default {
   },
   data() {
     return {
+      defaultForm : {
+        status: 1,
+        title: '', // 文章题目
+        content: '', // 文章内容
+        summary: '', // 文章摘要
+        summary_img: '', // 文章图片
+        category: '', // 文章分类
+        display_time: undefined, // 前台展示时间
+        id: undefined,
+        article_from: null,
+        is_top: false,
+        category_id: null
+      },
       options: [],
-      postForm: Object.assign({}, defaultForm),
+      postForm: Object.assign({}, this.defaultForm),
       loading: false,
       categorylist: []
     }
@@ -76,7 +77,7 @@ export default {
       const id = this.$route.params && this.$route.params.id
       this.fetchData(id)
     } else {
-      this.postForm = Object.assign({}, defaultForm)
+      this.postForm = Object.assign({}, this.defaultForm)
     }
   },
   methods: {
@@ -213,12 +214,6 @@ export default {
     .editor-toolbar{
       opacity:0.9;
       border: 0px solid #bbb;
-      width: 800px;
-      margin: auto;
-    }
-    .editor-toolbar{
-      opacity:0.9;
-      border: 0px solid #bbb!important;
       width: 800px;
       margin: auto;
     }

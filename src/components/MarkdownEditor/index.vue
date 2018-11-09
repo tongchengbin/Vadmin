@@ -1,81 +1,48 @@
 <template>
-  <div class="simplemde-container" :style="{height:height+'px',zIndex:zIndex}">
-    <textarea id="markdown-editor" ref="area"></textarea>
+  <div class="simplemde-container">
+    <div class="editor-custom-btn-container">
+      <editorImage color="#1890ff" class="editor-upload-btn"></editorImage>
+    </div>
+    <markdown-editor
+            v-model="content"
+            :highlight="true"
+            preview-class="markdown-body">
+    </markdown-editor>
   </div>
 </template>
-<script>
-  import 'font-awesome/css/font-awesome.min.css'
-  import 'simplemde/dist/simplemde.min.css'
-  import SimpleMDE from 'simplemde'
 
+<script>
+  import editorImage from './components/editorImage'
+  import hljs from 'highlight.js';
+  import markdownEditor from 'vue-simplemde/src/markdown-editor';
+  import 'highlight.js/styles/atom-one-dark.css'
+  import 'simplemde/dist/simplemde.min.css';
+  import 'github-markdown-css';
+  window.hljs = hljs;
   export default {
     name: 'simplemde-md',
-    props: {
-      value: String
-    },
     data() {
       return {
+        content: '``` \nconsole.log("lalala") \n```',
         simplemde: null,
-        hasChange: false
+        hasChange: false,
+        markdownId:this.id
       }
     },
-    watch: {
-      value(val) {
-        if (val === this.simplemde.value() && !this.hasChange) return
-        this.simplemde.value(val)
-      }
-    },
-    mounted() {
-      this.simplemde = new SimpleMDE({
-        element: document.getElementById('markdown-editor'),
-        autoDownloadFontAwesome: false,
-        autofocus: this.autofocus,
-        toolbar: this.toolbar,
-        spellChecker: false,
-        insertTexts: {
-          link: ['[', ']( )']
-        },
-        // hideIcons: ['guide', 'heading', 'quote', 'image', 'preview', 'side-by-side', 'fullscreen'],
-        placeholder: this.placeholder
-      })
-      if (this.value) {
-        this.simplemde.value(this.value)
-      }
-      this.simplemde.codemirror.on('change', () => {
-        if (this.hasChange) {
-          this.hasChange = true
-        }
-        this.$emit('input', this.simplemde.value())
-      })
-    },
-    destroyed() {
-      this.simplemde.toTextArea()
-      this.simplemde = null
-    },
+    components: { markdownEditor,editorImage },
+
+
     methods: {
-      imageSuccessCBK(arr) {
-        const _this = this
-        arr.forEach(v => {
-          window.tinymce.get(_this.tinymceId).insertContent(`<img class="wscnph" src="${v.url}" >`)
-        })
-      }
     }
   }
 </script>
 
 <style scoped>
-
-  .editor-toolbar{
-    opacity:0.9;
-    border: 0 !important;
-    width: 800px;
-    margin: auto;
-  }
   .simplemde-container >>>.CodeMirror {
     min-height: 150px;
     line-height: 20px;
     border:0px solid #ddd;
-    width: 800px;
+    /*width: 800px;*/
   }
 
   .simplemde-container>>>.CodeMirror-scroll {
