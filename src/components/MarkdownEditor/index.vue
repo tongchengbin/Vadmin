@@ -1,8 +1,5 @@
 <template>
   <div class="simplemde-container">
-    <div class="editor-custom-btn-container">
-      <editorImage color="#1890ff" class="editor-upload-btn"></editorImage>
-    </div>
     <markdown-editor
             v-model="content"
             :highlight="true"
@@ -13,24 +10,23 @@
 
 <script>
   import editorImage from './components/editorImage'
-  import hljs from 'highlight.js';
-  import markdownEditor from 'vue-simplemde/src/markdown-editor';
+  import hljs from 'highlight.js'
+  import markdownEditor from 'vue-simplemde/src/markdown-editor'
   import 'highlight.js/styles/atom-one-dark.css'
-  import 'simplemde/dist/simplemde.min.css';
-  import 'github-markdown-css';
-  window.hljs = hljs;
-  export default {
+  import 'simplemde/dist/simplemde.min.css'
+  import 'github-markdown-css'
+window.hljs = hljs
+export default {
     name: 'simplemde-md',
     data() {
       return {
         content: '``` \nconsole.log("lalala") \n```',
         simplemde: null,
         hasChange: false,
-        markdownId:this.id
+        markdownId: this.id
       }
     },
-    components: { markdownEditor,editorImage },
-
+    components: { markdownEditor, editorImage },
 
     methods: {
     }
@@ -44,7 +40,9 @@
     border:0px solid #ddd;
     /*width: 800px;*/
   }
-
+  .simplemde-container{
+    position: absolute;
+  }
   .simplemde-container>>>.CodeMirror-scroll {
     min-height: 150px;
   }
@@ -75,11 +73,9 @@
   }
   .editor-upload-btn{
     position: relative;
-    top: 2px;
+    /*top: 2px;*/
     margin-top: 2px;
     float: right;
     z-index: 19;
   }
-
-
 </style>

@@ -1,96 +1,104 @@
 <template>
   <div class="upload-container">
-    <el-button icon='el-icon-upload' size="mini" :style="{background:color,borderColor:color}" @click=" dialogVisible=true" type="primary">上传图片
+    <el-button icon='el-icon-upload' size="mini" style="background:#1890ff" @click=" dialogVisible=true" type="primary">上传图片
     </el-button>
-    <el-dialog append-to-body :visible.sync="dialogVisible">
-      <el-upload class="editor-slide-upload" action="http://upload.qiniu.com" :multiple="true" :file-list="fileList" :show-file-list="true"
-        list-type="picture-card" :on-remove="handleRemove" :on-success="handleSuccess" :before-upload="beforeUpload">
-        <el-button size="small" type="primary">点击上传</el-button>
-      </el-upload>
-      <el-button @click="dialogVisible = false">取 消</el-button>
-      <el-button type="primary" @click="handleSubmit">确 定</el-button>
+    <el-dialog append-to-body :visible.sync="dialogVisible" custom-class="upload-image">
+        <el-upload class="image-uploader"
+                   :data="dataObj"
+                   drag
+                   :multiple="false"
+                   :show-file-list="false"
+                   action="http://up.qiniup.com"
+                   :before-upload="beforeUpload"
+                   bucket="public"
+                   :on-success="handleImageScucess">
+          <i class="el-icon-upload"></i>
+          <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+        </el-upload>
+        <div class="image-preview-wrapper" v-show="imageUrl">
+          <img :src="imageUrl" alt="">
+          <div class="image-preview-action">
+            <i @click="rmImage" class="el-icon-delete"></i>
+          </div>
+        </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="handleSubmit">确 定</el-button>
+      </span>
     </el-dialog>
   </div>
 </template>
 
+
 <script>
-// import { getToken } from 'api/qiniu'
+    import request from '@/api/public'
+    import CoreApi from '@/api/CoreApi'
 
-export default {
-  name: 'editorSlideUpload',
-  props: {
-    color: {
-      type: String,
-      default: '#1890ff'
-    }
-  },
-  data() {
-    return {
-      dialogVisible: false,
-      listObj: {},
-      fileList: []
-    }
-  },
-  methods: {
-    checkAllSuccess() {
-      return Object.keys(this.listObj).every(item => this.listObj[item].hasSuccess)
-    },
-    handleSubmit() {
-      const arr = Object.keys(this.listObj).map(v => this.listObj[v])
-      if (!this.checkAllSuccess()) {
-        this.$message('请等待所有图片上传成功 或 出现了网络问题，请刷新页面重新上传！')
-        return
-      }
-      console.log(arr)
-      this.$emit('successCBK', arr)
-      this.listObj = {}
-      this.fileList = []
-      this.dialogVisible = false
-    },
-    handleSuccess(response, file) {
-      const uid = file.uid
-      const objKeyArr = Object.keys(this.listObj)
-      for (let i = 0, len = objKeyArr.length; i < len; i++) {
-        if (this.listObj[objKeyArr[i]].uid === uid) {
-          this.listObj[objKeyArr[i]].url = response.files.file
-          this.listObj[objKeyArr[i]].hasSuccess = true
-          return
+    export default {
+      name: 'editimage',
+      props: {
+        value: String
+      },
+
+      data() {
+        return {
+          dialogVisible: false,
+          imageUrl: '',
+          dataObj: { token: '', key: '' }
+        }
+      },
+      mounted() {
+
+      },
+      methods: {
+        rmImage() {
+          this.emitInput('')
+        },
+        emitInput(val) {
+          this.$emit('input', val)
+        },
+        handleImageScucess(file) {
+          this.emitInput(this.domain_url + file.key)
+          this.imageUrl = this.domain_url + file.key
+        },
+        beforeUpload(file) {
+          const _self = this
+          return new Promise((resolve, reject) => {
+            request.get(CoreApi.QINIU_TOKEN, {}).then(response => {
+              const token = response.data.token
+              _self._data.dataObj.token = token
+              _self._data.dataObj.key = file.name
+              this.domain_url = response.data.domain_url
+              resolve(true)
+            }).catch(err => {
+              console.log(err)
+              reject(false)
+            })
+          })
+        },
+        handleSubmit() {
+          this.$emit('successCBK', this.imageUrl)
+          this.imageUrl =
+                this.dialogVisible = false
         }
       }
-    },
-    handleRemove(file) {
-      const uid = file.uid
-      const objKeyArr = Object.keys(this.listObj)
-      for (let i = 0, len = objKeyArr.length; i < len; i++) {
-        if (this.listObj[objKeyArr[i]].uid === uid) {
-          delete this.listObj[objKeyArr[i]]
-          return
-        }
-      }
-    },
-    beforeUpload(file) {
-      const _self = this
-      const _URL = window.URL || window.webkitURL
-      const fileName = file.uid
-      this.listObj[fileName] = {}
-      return new Promise((resolve, reject) => {
-        const img = new Image()
-        img.src = _URL.createObjectURL(file)
-        img.onload = function() {
-          _self.listObj[fileName] = { hasSuccess: false, uid: file.uid, width: this.width, height: this.height }
-        }
-        resolve(true)
-      })
     }
-  }
-}
 </script>
+<!--<style scoped>-->
 
-<style rel="stylesheet/scss" lang="scss" scoped>
-.editor-slide-upload {
-  margin-bottom: 20px;
-  /deep/ .el-upload--picture-card {
-    width: 100%;
-  }
-}
-</style>
+    <!--.image-uploader{-->
+        <!--margin: auto;-->
+
+
+    <!--}-->
+    <!--.upload-image{-->
+        <!--width: 100px!important;-->
+
+    <!--}-->
+    <!--.el-dialog{-->
+        <!--width: 100px;-->
+
+    <!--}-->
+
+
+<!--</style>-->

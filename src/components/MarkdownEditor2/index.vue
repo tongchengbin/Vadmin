@@ -44,7 +44,7 @@ export default {
     return {
       simplemde: null,
       hasChange: false,
-      markdownId:this.id
+      markdownId: this.id
     }
   },
   components: { editorImage },
@@ -82,12 +82,12 @@ export default {
     this.simplemde = null
   },
   methods: {
-  imageSuccessCBK(arr) {
-    const _this = this
-    arr.forEach(v => {
-      window.tinymce.get(_this.tinymceId).insertContent(`<img class="wscnph" src="${v.url}" >`)
-    })
-  }
+    imageSuccessCBK(arr) {
+      const _this = this
+      arr.forEach(v => {
+        window.tinymce.get(_this.tinymceId).insertContent(`<img class="wscnph" src="${v.url}" >`)
+      })
+    }
   }
 }
 </script>
