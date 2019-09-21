@@ -26,6 +26,8 @@ export default {
     if (!this.roles.includes('admin') && !this.roles.includes('superuser')) {
       this.currentRole = 'editorDashboard'
     }
+
+    window.__this = this;
   }
 }
 </script>

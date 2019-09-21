@@ -34,8 +34,8 @@ export default {
   data() {
     return {
       loginForm: {
-        username: '',
-        password: ''
+        username: '58296672@qq.com',
+        password: 'abc123456'
       },
       passwordType: 'password',
       loading: false,
@@ -51,10 +51,15 @@ export default {
       }
     },
     handleLogin() {
-      this.loading = true
+      this.loading = true;
       this.$store.dispatch('LoginByUsername', this.loginForm).then(() => {
-        this.loading = false
-        this.$router.push({ path: '/' })
+          //获取用户信息
+          this.$store.dispatch("GetUserInfo").then(()=>{
+              console.log("login success");
+              this.loading = false;
+              this.$router.push({ path: '/' })
+              }
+          );
       }).catch(() => {
         this.loading = false
       })

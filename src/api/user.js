@@ -4,9 +4,9 @@ export function loginByUsername(username, password) {
   const data = {
     username,
     password
-  }
+  };
   return request({
-    url: '/api/admin/login/',
+    url: '/api/admin/login',
     method: 'post',
     data
   })
@@ -19,9 +19,9 @@ export function logout() {
   })
 }
 
-export function getUserInfo(token) {
+export function getUserInfo() {
   return request({
-    url: '/api/admin/account/user/info/',
+    url: '/api/admin/user/info/',
     method: 'get'
   })
 }

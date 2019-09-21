@@ -104,7 +104,7 @@
   import { mapGetters } from 'vuex'
 
 export default {
-  name: 'user',
+  name: 'account',
   data() {
       return {
         list: null,

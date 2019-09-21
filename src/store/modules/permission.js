@@ -38,18 +38,22 @@ const permission = {
   },
   mutations: {
     SET_ROUTERS: (state, routers) => {
-      state.addRouters = routers
-      state.routers = constantRouterMap.concat(routers)
+      console.log("设置路由");
+        constantRouterMap.unshift(...routers);
+        state.addRouters = routers;
+        state.routers = constantRouterMap;
+        // constantRouterMap = constantRouterMap.concat(routers)
+        console.log(state.routers.map(item => item.path))
     }
   },
   actions: {
     GenerateRoutes({ commit }, data) {
       return new Promise(resolve => {
-        commit('SET_ROUTERS', filterAsyncRouter(asyncRouterMap, store.getters.roles))
+        commit('SET_ROUTERS', asyncRouterMap);
         resolve()
       })
     }
   }
-}
+};
 
 export default permission

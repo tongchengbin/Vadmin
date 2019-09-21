@@ -1,28 +1,30 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-Vue.use(Router)
+Vue.use(Router);
 
 /* Layout */
 import Layout from '@/views/layout/Layout'
 
 export const constantRouterMap = [
-  { path: '/login', component: () => import('@/views/login/index'), hidden: true },
-  { path: '/authredirect', component: () => import('@/views/login/authredirect'), hidden: true },
-  { path: '/404', component: () => import('@/views/errorPage/404'), hidden: true },
-  { path: '/401', component: () => import('@/views/errorPage/401'), hidden: true },
-  { path: '/403', component: () => import('@/views/errorPage/403'), hidden: true },
-  { path: '*', redirect: '/404', hidden: true },
+  { path: '/login', component: () => import('@/views/login/index'), hidden: true,auth:false },
+  { path: '/authredirect', component: () => import('@/views/login/authredirect'), hidden: true,auth:false },
+  { path: '/404', component: () => import('@/views/errorPage/404'), hidden: true,auth:false },
+  { path: '/401', component: () => import('@/views/errorPage/401'), hidden: true,auth:false },
+  { path: '/403', component: () => import('@/views/errorPage/403'), hidden: true,auth:false },
+  // { path: '*', redirect: '/404', hidden: true },
   {
     path: '',
-    component: Layout,
-    redirect: 'dashboard',
-    children: [{
+      component: Layout,
+      redirect: 'dashboard',
+      auth:false,
+      children: [{
       path: 'dashboard',
       component: () => import('@/views/dashboard/index'),
       name: 'dashboard',
-      meta: { title: '主页', icon: 'dashboard', noCache: true }
-    }]
+      meta: { title: '主页', icon: 'dashboard', noCache: true,auth:true },
+      }
+    ]
   }
   // {
   //   path: '/documentation',
@@ -36,7 +38,7 @@ export const constantRouterMap = [
   //   }]
   // },
 
-]
+];
 
 export default new Router({
   // mode: 'history', // require service support
@@ -46,53 +48,55 @@ export default new Router({
 
 export const asyncRouterMap = [
   {
-    path: '/account',
+    path: 'account',
     component: Layout,
     name: 'account',
     noCache: true,
     meta: {
+        auth:false,
       title: '用户管理',
       icon: 'users',
       roles: ['superuser', 'admin']
     },
     children: [
-      { path: 'user', component: () => import('@/views/account/user'), name: 'user', noCache: true, meta: { title: '用户', icon: 'user' }}
+      { path: 'user', component: () => import('@/views/account/user'), name: 'user', noCache: true, meta: { title: '用户', icon: 'user',auth:false }}
       // { path: 'role', component: () => import('@/views/account/role'), name: 'role', meta: { title: '角色', icon: 'role' }},
       // { path: 'permission', component: () => import('@/views/account/permission'), name: 'permission', meta: { title: '权限', icon: '权限资源' }}
     ]
   },
-  {
-    path: '/shop',
-    component: Layout,
-    name: 'shop',
-    meta: { title: '商品管理', icon: 'shopify' },
-    children: [
-      { path: 'course', name: 'course', component: () => import('@/views/shop/course'), meta: { title: '课程', icon: 'course' }},
-      { path: 'category', name: 'category', component: () => import('@/views/shop/category'), meta: { title: '分类', icon: 'form' }},
-      // { path: 'funserver', name: 'FunServer', component: () => import('@/views/shop/funlist'), meta: { title: 'funserver', icon: 'form' }},
-      // { path: 'imoocedit/:id(\\d+)', name: 'imoocedit', hidden: true, component: () => import('@/views/shop/imoocedit'), meta: { title: 'Edit', icon: 'tree' }},
-      { path: 'qiaohuorder', name: 'QiaohuOrder', component: () => import('@/views/shop/qiaohuOrder'), meta: { title: '巧虎订单', icon: '订单' }},
-      { path: 'qiaohurecord', name: 'QiaohuRecordd', component: () => import('@/views/shop/qiaohuRecord'), meta: { title: '巧虎任务执行', icon: 'task' }},
-      // { path: 'yunpan', name: 'yunpan', component: () => import('@/views/shop/yunpan'), meta: { title: '云盘精灵', icon: '网盘' }},
-      // { path: 'taobaocourse', name: 'taobaocourse', component: () => import('@/views/shop/taobaoCourse'), meta: { title: 'taobaocourse', icon: 'form' }},
-      { path: 'sexx', name: 'sexx', component: () => import('@/views/shop/sexx'), meta: { title: '蝌蚪', icon: 'kdw', roles: ['superuser'] }}
-    ]
-  },
-  {
-    path: '/blog',
-    component: Layout,
-    redirect: '/blog/article/',
-    name: 'blog',
-    meta: {
-      title: 'Blog',
-      icon: 'blog'
-    },
-    children: [
-      { path: 'create', component: () => import('@/views/blog/create'), name: 'createArticle', meta: { title: 'createArticle', icon: 'edit' }},
-      { path: 'article/edit/:id(\\d+)', component: () => import('@/views/blog/edit'), name: 'editArticle', meta: { title: 'editArticle', noCache: true }, hidden: true },
-      { path: 'list', component: () => import('@/views/blog/list'), name: 'articleList', meta: { title: 'articleList', icon: 'list' }}
-    ]
-  },
+  // {
+  //   path: '/shop',
+  //   component: Layout,
+  //   name: 'shop',
+  //   meta: { title: '商品管理', icon: 'shopify' },
+  //   children: [
+  //     { path: 'course', name: 'course', component: () => import('@/views/shop/course'), meta: { title: '课程', icon: 'course' }},
+  //     { path: 'category', name: 'category', component: () => import('@/views/shop/category'), meta: { title: '分类', icon: 'form' }},
+  //     // { path: 'funserver', name: 'FunServer', component: () => import('@/views/shop/funlist'), meta: { title: 'funserver', icon: 'form' }},
+  //     // { path: 'imoocedit/:id(\\d+)', name: 'imoocedit', hidden: true, component: () => import('@/views/shop/imoocedit'), meta: { title: 'Edit', icon: 'tree' }},
+  //     { path: 'qiaohuorder', name: 'QiaohuOrder', component: () => import('@/views/shop/qiaohuOrder'), meta: { title: '巧虎订单', icon: '订单' }},
+  //     { path: 'qiaohurecord', name: 'QiaohuRecordd', component: () => import('@/views/shop/qiaohuRecord'), meta: { title: '巧虎任务执行', icon: 'task' }},
+  //     // { path: 'yunpan', name: 'yunpan', component: () => import('@/views/shop/yunpan'), meta: { title: '云盘精灵', icon: '网盘' }},
+  //     // { path: 'taobaocourse', name: 'taobaocourse', component: () => import('@/views/shop/taobaoCourse'), meta: { title: 'taobaocourse', icon: 'form' }},
+  //     { path: 'sexx', name: 'sexx', component: () => import('@/views/shop/sexx'), meta: { title: '蝌蚪', icon: 'kdw', roles: ['superuser'] }}
+  //   ]
+  // },
+  // {
+  //   path: '/blog',
+  //   component: Layout,
+  //   redirect: '/blog/article/',
+  //   name: 'blog',
+  //   meta: {
+  //     auth:false,
+  //     title: 'Blog',
+  //     icon: 'blog'
+  //   },
+  //   children: [
+  //     { path: 'create', component: () => import('@/views/blog/create'), name: 'createArticle', meta: { title: 'createArticle', icon: 'edit' }},
+  //     { path: 'article/edit/:id(\\d+)', component: () => import('@/views/blog/edit'), name: 'editArticle', meta: { title: 'editArticle', noCache: true }, hidden: true },
+  //     { path: 'list', component: () => import('@/views/blog/list'), name: 'articleList', meta: { title: 'articleList', icon: 'list' }}
+  //   ]
+  // },
   // {
   //   path: '/permission',
   //   component: Layout,se
@@ -261,4 +265,4 @@ export const asyncRouterMap = [
   //   component: Layout,
   //   children: [{ path: 'index', component: () => import('@/views/i18n-demo/index'), name: 'i18n', meta: { title: 'i18n', icon: 'international' }}]
   // },
-]
+];
