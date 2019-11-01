@@ -341,6 +341,7 @@
     float: right;
   }
   .main{
+    overflow: auto;
     min-height: 450px;
   }
   .page-header{

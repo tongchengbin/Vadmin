@@ -2,7 +2,7 @@ import axios from 'axios'
 import {  Message } from 'element-ui'
 // import store from '@/store'
 import { getToken } from '@/utils/auth'
-
+import router from '../router'
 // create an axios instance
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
@@ -34,14 +34,20 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   response => {
     return response.data
+
   },
   error => {
-    console.log('res is error' + error) // for debug
     Message({
       message: error.message,
       type: 'error',
       duration: 5 * 1000
     })
+    switch (error.response.status) {
+      case 403:
+        router.push('/login')
+
+    }
+
     return Promise.reject(error)
   }
 )
