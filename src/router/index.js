@@ -1,31 +1,30 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-Vue.use(Router);
+Vue.use(Router)
 
 /* Layout */
-import Layout from '@/views/layout/Layout'
+import Layout from '@/layout'
 
-export const constantRouterMap = [
-  { path: '/login', component: () => import('@/views/login/index'), hidden: true,auth:false },
-  { path: '/authredirect', component: () => import('@/views/login/authredirect'), hidden: true,auth:false },
-  { path: '/404', component: () => import('@/views/errorPage/404'), hidden: true,auth:false },
-  { path: '/401', component: () => import('@/views/errorPage/401'), hidden: true,auth:false },
-  { path: '/403', component: () => import('@/views/errorPage/403'), hidden: true,auth:false },
-  // { path: '*', redirect: '/404', hidden: true },
+export const constantRoutes = [
+  { path: '/login', component: () => import('@/views/login/index'), hidden: true, auth: false },
+  { path: '/authredirect', component: () => import('@/views/login/authredirect'), hidden: true, auth: false },
+  { path: '/404', component: () => import('@/views/errorPage/404'), hidden: true, auth: false },
+  { path: '/401', component: () => import('@/views/errorPage/401'), hidden: true, auth: false },
+  { path: '/403', component: () => import('@/views/errorPage/403'), hidden: true, auth: false },
   {
     path: '',
-      component: Layout,
-      redirect: 'dashboard',
-      auth:false,
-      children: [{
+    component: Layout,
+    redirect: 'dashboard',
+    children: [{
       path: 'dashboard',
       component: () => import('@/views/dashboard/index'),
       name: 'dashboard',
-      meta: { title: '主页', icon: 'dashboard', noCache: true,auth:true },
-      }
+      meta: { title: '主页', icon: 'dashboard', noCache: true, auth: true }
+    }
     ]
   }
+
   // {
   //   path: '/documentation',
   //   component: Layout,
@@ -38,32 +37,71 @@ export const constantRouterMap = [
   //   }]
   // },
 
-];
-
-export default new Router({
-  // mode: 'history', // require service support
-  scrollBehavior: () => ({ y: 0 }),
-  routes: constantRouterMap
-})
-
-export const asyncRouterMap = [
+]
+export const asyncRoutes = [
   {
-    path: 'account',
+    path: '/account',
     component: Layout,
     name: 'account',
     noCache: true,
     meta: {
-        auth:false,
+      auth: true,
       title: '用户管理',
       icon: 'users',
       roles: ['superuser', 'admin']
     },
     children: [
-      { path: 'user', component: () => import('@/views/account/user'), name: 'user', noCache: true, meta: { title: '用户', icon: 'user',auth:false }}
+      {
+        path: 'user',
+        component: () => import('@/views/account/user/'),
+        name: 'user',
+        meta: { title: '用户', icon: 'user', auth: true }
+      }
       // { path: 'role', component: () => import('@/views/account/role'), name: 'role', meta: { title: '角色', icon: 'role' }},
       // { path: 'permission', component: () => import('@/views/account/permission'), name: 'permission', meta: { title: '权限', icon: '权限资源' }}
     ]
   },
+  // 加油小厨
+  {
+    path: '/food',
+    component: Layout,
+    meta: { 'title': '家有小厨', icon: 'icon', auth: true },
+    children: [
+      {
+        path: 'menu',
+        component: () => import('@/views/food/menu'),
+        name: 'menu',
+        auth: true,
+        meta: { 'title': '菜单管理', icon: 'icon', auth: true },
+      },
+      {
+        path: 'addMenu',
+        name: 'addmenu',
+        component: () => import('@/views/food/addMenu'),
+        hidden:true,
+        meta: {"title":"添加菜谱",icon:'icon',auth:true,hidden:true}
+      },
+      // {
+      //   path: 'food',
+      //   component: () => import('@/views/food/food'),
+      //   name: 'food',
+      //   meta: { 'title': '食材管理', icon: 'icon', noCache: false, auth: true }
+      // },
+      {
+        path: 'foodcate',
+        component: () => import('@/views/food/foodcate'),
+        name: 'foodcate',
+        meta: { 'title': '食材管理', icon: 'icon', noCache: false, auth: true }
+      },
+      {
+        path: 'cate',
+        component: () => import('@/views/food/cate'),
+        name: 'cate',
+        meta: { 'title': '菜单分类', icon: 'icon', noCache: false, auth: true }
+      }
+    ]
+  },
+
   // {
   //   path: '/shop',
   //   component: Layout,
@@ -130,11 +168,38 @@ export const asyncRouterMap = [
     component: Layout,
     children: [{
       path: 'index',
-      component: () => import('@/views/svg-icons/index'),
+      component: () => import('@/views/icons/index'),
       name: 'icons',
       meta: { title: 'icons', icon: 'icon', noCache: true }
     }]
   }
+  // 加油小厨
+  // {
+  //     path: "/food",
+  //     component:Layout,
+  //     meta:{"title":"家有小厨",icon:"icon",auth:true},
+  //     children:[
+  //         {
+  //             path:"menu",
+  //             component:()=>import("@/views/food/menu"),
+  //             name:"菜单管理",
+  //             auth:true,
+  //             meta:{"title":"菜单管理",icon:"icon",auth:true}
+  //         },
+  //         {
+  //             path:"food",
+  //             component:()=>import("@/views/food/food"),
+  //             name:"食材管理",
+  //             meta:{"title":"食材管理",icon:"icon",noCache:true,auth:true}
+  //         },
+  //         {
+  //             path:"cate",
+  //             component:()=>import("@/views/food/cate"),
+  //             name:"菜单分类",
+  //             meta:{"title":"食材管理",icon:"icon",noCache:true,auth:true}
+  //         }
+  //     ]
+  // }
   //
   // {
   //   path: '/components',
@@ -265,4 +330,20 @@ export const asyncRouterMap = [
   //   component: Layout,
   //   children: [{ path: 'index', component: () => import('@/views/i18n-demo/index'), name: 'i18n', meta: { title: 'i18n', icon: 'international' }}]
   // },
-];
+]
+
+const createRouter = () => new Router({
+  // mode: 'history', // require service support
+  scrollBehavior: () => ({ y: 0 }),
+  routes: constantRoutes
+})
+
+const router = createRouter()
+
+// Detail see: https://github.com/vuejs/vue-router/issues/1234#issuecomment-357941465
+export function resetRouter() {
+  const newRouter = createRouter()
+  router.matcher = newRouter.matcher // reset router
+}
+
+export default router

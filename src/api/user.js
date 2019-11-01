@@ -1,10 +1,10 @@
 import request from '@/utils/request'
 
-export function loginByUsername(username, password) {
+export function login(username, password) {
   const data = {
     username,
     password
-  };
+  }
   return request({
     url: '/api/admin/login',
     method: 'post',

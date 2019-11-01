@@ -2,47 +2,47 @@
   <div class="app-container">
     <el-form :inline="true">
       <div class="filter-container">
-        <el-form-item><el-input v-model="listQuery.search" style="width: 200px;" placeholder="搜索"></el-input></el-form-item>
+        <el-form-item><el-input v-model="listQuery.search" style="width: 200px;" placeholder="搜索" /></el-form-item>
         <el-form-item>
           <el-select v-model="listQuery.lang" placeholder="分类">
             <el-option
-            v-for="item in langlist"
-            :key="item.id"
-            :label="item.cn"
-            :value="item.id">
-          </el-option>
+              v-for="item in langlist"
+              :key="item.id"
+              :label="item.cn"
+              :value="item.id"
+            />
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button  type="primary"  icon="el-icon-search" @click="handleFilter">搜索</el-button>
+          <el-button type="primary" icon="el-icon-search" @click="handleFilter">搜索</el-button>
         </el-form-item>
       </div>
     </el-form>
     <div style="width: 100%">
-      <el-table :data="list" v-loading="listLoading"border fit highlight-current-row style="width: 100%">
-        <el-table-column width="200px" align="center" label=标题>
+      <el-table v-loading="listLoading" :data="list"border fit highlight-current-row style="width: 100%">
+        <el-table-column width="200px" align="center" label="标题">
           <template slot-scope="scope">
-            <span>{{scope.row.title }}</span>
+            <span>{{ scope.row.title }}</span>
           </template>
         </el-table-column>
-        <el-table-column  align="center" label="描述">
+        <el-table-column align="center" label="描述">
           <template slot-scope="scope">
-            <span>{{scope.row.desc}}</span>
+            <span>{{ scope.row.desc }}</span>
           </template>
         </el-table-column>
-        <el-table-column  label="分类" width="80px">
+        <el-table-column label="分类" width="80px">
           <template slot-scope="scope">
-            <span>{{scope.row.lang_cn}}</span>
+            <span>{{ scope.row.lang_cn }}</span>
           </template>
         </el-table-column>
-        <el-table-column  label="价格" width="80px">
+        <el-table-column label="价格" width="80px">
           <template slot-scope="scope">
-            <span>{{scope.row.price}}</span>
+            <span>{{ scope.row.price }}</span>
           </template>
         </el-table-column>
-        <el-table-column  align="center" label="资源">
+        <el-table-column align="center" label="资源">
           <template slot-scope="scope">
-            <span>{{scope.row.res}}</span>
+            <span>{{ scope.row.res }}</span>
           </template>
         </el-table-column>
         <el-table-column align="center" label="操作" width="282px">
@@ -55,8 +55,7 @@
       </el-table>
     </div>
     <div class="pagination-container">
-      <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="listQuery.page" :page-sizes="[10,20,30, 50]" :page-size="listQuery.limit" layout="total, sizes, prev, pager, next, jumper" :total="total">
-      </el-pagination>
+      <el-pagination background :current-page="listQuery.page" :page-sizes="[10,20,30, 50]" :page-size="listQuery.limit" layout="total, sizes, prev, pager, next, jumper" :total="total" @size-change="handleSizeChange" @current-change="handleCurrentChange" />
     </div>
   </div>
 </template>
@@ -64,7 +63,17 @@
 <script>
 import { goodslist, goodslanglist, goodsdelete } from '@/api/shop'
 export default {
-  name: 'imooclist',
+  name: 'Imooclist',
+  filters: {
+    statusFilter(status) {
+      const statusMap = {
+        published: 'success',
+        draft: 'info',
+        deleted: 'danger'
+      }
+      return statusMap[status]
+    }
+  },
   data() {
     return {
       lang: '',
@@ -78,16 +87,6 @@ export default {
         offset: 0,
         limit: 10
       }
-    }
-  },
-  filters: {
-    statusFilter(status) {
-      const statusMap = {
-        published: 'success',
-        draft: 'info',
-        deleted: 'danger'
-      }
-      return statusMap[status]
     }
   },
   created() {

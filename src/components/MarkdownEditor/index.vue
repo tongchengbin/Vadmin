@@ -1,81 +1,118 @@
 <template>
-  <div class="simplemde-container">
-    <markdown-editor
-            v-model="content"
-            :highlight="true"
-            preview-class="markdown-body">
-    </markdown-editor>
-  </div>
+  <div :id="id" />
 </template>
 
 <script>
-  import editorImage from './components/editorImage'
-  import hljs from 'highlight.js'
-  import markdownEditor from 'vue-simplemde/src/markdown-editor'
-  import 'highlight.js/styles/atom-one-dark.css'
-  import 'simplemde/dist/simplemde.min.css'
-  import 'github-markdown-css'
-window.hljs = hljs
+// deps for editor
+import 'codemirror/lib/codemirror.css' // codemirror
+import 'tui-editor/dist/tui-editor.css' // editor ui
+import 'tui-editor/dist/tui-editor-contents.css' // editor content
+
+import Editor from 'tui-editor'
+import defaultOptions from './default-options'
+
 export default {
-    name: 'simplemde-md',
-    data() {
-      return {
-        content: '``` \nconsole.log("lalala") \n```',
-        simplemde: null,
-        hasChange: false,
-        markdownId: this.id
+  name: 'MarddownEditor',
+  props: {
+    value: {
+      type: String,
+      default: ''
+    },
+    id: {
+      type: String,
+      required: false,
+      default() {
+        return 'markdown-editor-' + +new Date() + ((Math.random() * 1000).toFixed(0) + '')
       }
     },
-    components: { markdownEditor, editorImage },
-
-    methods: {
+    options: {
+      type: Object,
+      default() {
+        return defaultOptions
+      }
+    },
+    mode: {
+      type: String,
+      default: 'markdown'
+    },
+    height: {
+      type: String,
+      required: false,
+      default: '300px'
+    },
+    language: {
+      type: String,
+      required: false,
+      default: 'en_US' // https://github.com/nhnent/tui.editor/tree/master/src/js/langs
+    }
+  },
+  data() {
+    return {
+      editor: null
+    }
+  },
+  computed: {
+    editorOptions() {
+      const options = Object.assign({}, defaultOptions, this.options)
+      options.initialEditType = this.mode
+      options.height = this.height
+      options.language = this.language
+      return options
+    }
+  },
+  watch: {
+    value(newValue, preValue) {
+      if (newValue !== preValue && newValue !== this.editor.getValue()) {
+        this.editor.setValue(newValue)
+      }
+    },
+    language(val) {
+      this.destroyEditor()
+      this.initEditor()
+    },
+    height(newValue) {
+      this.editor.height(newValue)
+    },
+    mode(newValue) {
+      this.editor.changeMode(newValue)
+    }
+  },
+  mounted() {
+    this.initEditor()
+  },
+  destroyed() {
+    this.destroyEditor()
+  },
+  methods: {
+    initEditor() {
+      this.editor = new Editor({
+        el: document.getElementById(this.id),
+        ...this.editorOptions
+      })
+      if (this.value) {
+        this.editor.setValue(this.value)
+      }
+      this.editor.on('change', () => {
+        this.$emit('input', this.editor.getValue())
+      })
+    },
+    destroyEditor() {
+      if (!this.editor) return
+      this.editor.off('change')
+      this.editor.remove()
+    },
+    setValue(value) {
+      this.editor.setValue(value)
+    },
+    getValue() {
+      return this.editor.getValue()
+    },
+    setHtml(value) {
+      this.editor.setHtml(value)
+    },
+    getHtml() {
+      return this.editor.getHtml()
     }
   }
+}
 </script>
-
-<style scoped>
-  .simplemde-container >>>.CodeMirror {
-    min-height: 150px;
-    line-height: 20px;
-    border:0px solid #ddd;
-    /*width: 800px;*/
-  }
-  .simplemde-container{
-    position: absolute;
-  }
-  .simplemde-container>>>.CodeMirror-scroll {
-    min-height: 150px;
-  }
-
-  .simplemde-container>>>.CodeMirror-code {
-    padding-bottom: 40px;
-  }
-
-  .simplemde-container>>>.editor-statusbar {
-    display: none;
-  }
-
-  .simplemde-container>>>.CodeMirror .CodeMirror-code .cm-link {
-    color: #1890ff;
-  }
-
-  .simplemde-container>>>.CodeMirror .CodeMirror-code .cm-string.cm-url {
-    color: #2d3b4d;
-  }
-
-  .simplemde-container>>>.CodeMirror .CodeMirror-code .cm-formatting-link-string.cm-url {
-    padding: 0 2px;
-    color: #E61E1E;
-  }
-  .simplemde-container >>> .editor-toolbar.fullscreen,
-  .simplemde-container >>> .CodeMirror-fullscreen {
-    z-index: 1003;
-  }
-  .editor-upload-btn{
-    position: relative;
-    /*top: 2px;*/
-    margin-top: 2px;
-    float: right;
-    z-index: 19;
-  }
-</style>

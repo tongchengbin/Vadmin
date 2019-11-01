@@ -27,7 +27,7 @@ export default {
       data
     })
   },
-  httpDelete(url, pk) {
+  delete(url, pk) {
     url = pk ? url.replace('{pk}', pk) : url
     console.log(url)
     return request({
@@ -35,7 +35,7 @@ export default {
       method: 'delete'
     })
   },
-  httpPatch(url, data, pk) {
+  patch(url, data, pk) {
     url = pk ? url.replace('{pk}', pk) : url
     console.log(url)
     return request({

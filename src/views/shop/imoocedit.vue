@@ -1,39 +1,39 @@
 <template>
   <div class="app-container">
     <el-form ref="form" :model="GoodsForm" label-width="80px" size="medium ">
-    <el-form-item align="center">
-      <img :src="GoodsForm.default_img">
-    </el-form-item>
-    <el-form-item label="标题">
-      <el-input v-model="GoodsForm.title"></el-input>
-    </el-form-item>
-    <el-form-item label="价格">
-      <el-input-number v-model="GoodsForm.price"></el-input-number>
-    </el-form-item>
-    <el-form-item label="分类">
-      <el-select v-model="GoodsForm.lang" placeholder="分类">
-        <el-option
-          v-for="item in langlist"
-          :key="item.id"
-          :label="item.cn"
-          :value="item.id">
-        </el-option>
-      </el-select>
-    </el-form-item>
-    <el-form-item label="描述"  >
-      <el-input v-model="GoodsForm.desc"></el-input>
-    </el-form-item>
-    <el-form-item label="资源">
-      <el-input  v-model="GoodsForm.res"></el-input>
-    </el-form-item>
-    <el-form-item label="备用资源">
-      <el-input  v-model="GoodsForm.spare_res"></el-input>
-    </el-form-item>
-    <el-form-item size="medium" align="center">
-      <el-button type="primary" @click="handleUpdate">保存</el-button>
-      <el-button @click="handleCancle">取消</el-button>
-    </el-form-item>
-  </el-form>
+      <el-form-item align="center">
+        <img :src="GoodsForm.default_img">
+      </el-form-item>
+      <el-form-item label="标题">
+        <el-input v-model="GoodsForm.title" />
+      </el-form-item>
+      <el-form-item label="价格">
+        <el-input-number v-model="GoodsForm.price" />
+      </el-form-item>
+      <el-form-item label="分类">
+        <el-select v-model="GoodsForm.lang" placeholder="分类">
+          <el-option
+            v-for="item in langlist"
+            :key="item.id"
+            :label="item.cn"
+            :value="item.id"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="描述">
+        <el-input v-model="GoodsForm.desc" />
+      </el-form-item>
+      <el-form-item label="资源">
+        <el-input v-model="GoodsForm.res" />
+      </el-form-item>
+      <el-form-item label="备用资源">
+        <el-input v-model="GoodsForm.spare_res" />
+      </el-form-item>
+      <el-form-item size="medium" align="center">
+        <el-button type="primary" @click="handleUpdate">保存</el-button>
+        <el-button @click="handleCancle">取消</el-button>
+      </el-form-item>
+    </el-form>
   </div>
 </template>
 
@@ -44,7 +44,7 @@ import { goodsdetail } from '@/api/shop'
 import { goodslanglist } from '@/api/shop'
 import { goodsupdate } from '@/api/shop'
 export default {
-  name: 'goodsedit',
+  name: 'Goodsedit',
   omponents: {
     Upload
   },

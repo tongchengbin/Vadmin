@@ -1,25 +1,26 @@
 <template>
   <div class="category clearfix">
-    <el-dialog :visible.sync="visible"
-               custom-class="cardtree"
-               title="选择部门"
-               :center="true"
-               :show="show"
-               @close="$emit('update:show', false)"
-               :modal="false"
+    <el-dialog
+      :visible.sync="visible"
+      custom-class="cardtree"
+      title="选择部门"
+      :center="true"
+      :show="show"
+      :modal="false"
+      @close="$emit('update:show', false)"
     >
       <div>
-        <el-tree  v-loading="treeLoading"
-                  :data="treedata"
-                  node-key="id"
-                  ref="category"
-                  default-expand-all
-                  :expand-on-click-node="false"
-
-                 >
-                <span class="custom-tree-node" slot-scope="{ node, data }">
-                  <span>{{ node.label }}  </span>
-                 </span>
+        <el-tree
+          ref="category"
+          v-loading="treeLoading"
+          :data="treedata"
+          node-key="id"
+          default-expand-all
+          :expand-on-click-node="false"
+        >
+          <span slot-scope="{ node, data }" class="custom-tree-node">
+            <span>{{ node.label }}  </span>
+          </span>
         </el-tree>
       </div>
       <span slot="footer" class="dialog-footer">
@@ -30,74 +31,74 @@
   </div>
 </template>
 <script>
-  import { featchCategoryTree } from '@/api/shop'
-  export default {
-    props: {
-      data: {
-        type: Array,
-        default: []
-      },
-      show: {
-        type: Boolean,
-        default: false
-      },
-      handleSelectedTree: {
-        type: Function,
-        default: null
-      }
+import { featchCategoryTree } from '@/api/shop'
+export default {
+  components: {
+  },
+  props: {
+    data: {
+      type: Array,
+      default: []
     },
-    watch: {
-      show() {
-        this.visible = this.show
-      },
-      data() {
-        this.treedata = this.data && []
-      }
+    show: {
+      type: Boolean,
+      default: false
+    },
+    handleSelectedTree: {
+      type: Function,
+      default: null
+    }
+  },
+  data() {
+    return {
+      visible: this.show,
+      checkNode: null,
+      treeLoading: false,
+      treedata: []
+    }
+  },
+  computed: {
+  },
+  watch: {
+    show() {
+      this.visible = this.show
     },
     data() {
-      return {
-        visible: this.show,
-        checkNode: null,
-        treeLoading: false,
-        treedata: []
-      }
-    },
-    methods: {
-      featchtreeDate() {
-        this.treeLoading = true
-        featchCategoryTree().then(res => {
-          this.treedata = res.data
-        })
-        this.treeLoading = false
-      },
-      noSelect() {
-        this.$emit('submitNode', { id: null, label: null })
-        this.$emit('update:show', false)
-      },
-      centerDialogVisible() {
-        const node = this.$refs.category.currentNode && this.$refs.category.currentNode.node
-        if (node) {
-          this.$emit('submitNode', node.data)
-        }
-        this.$emit('update:show', false)
-      }
-    },
-    computed: {
-    },
-    mounted() {
-      console.log(this.handleSelectedTree)
-      if (this.data) {
-        this.treedata = this.data
-      } else {
-        this.featchtreeDate()
-      }
-    },
-    components: {
-    },
-    created() {
+      this.treedata = this.data && []
     }
-
+  },
+  mounted() {
+    console.log(this.handleSelectedTree)
+    if (this.data) {
+      this.treedata = this.data
+    } else {
+      this.featchtreeDate()
+    }
+  },
+  created() {
+  },
+  methods: {
+    featchtreeDate() {
+      this.treeLoading = true
+      featchCategoryTree().then(res => {
+        this.treedata = res.data
+      })
+      this.treeLoading = false
+    },
+    noSelect() {
+      this.$emit('submitNode', { id: null, label: null })
+      this.$emit('update:show', false)
+    },
+    centerDialogVisible() {
+      const node = this.$refs.category.currentNode && this.$refs.category.currentNode.node
+      if (node) {
+        this.$emit('submitNode', node.data)
+      }
+      this.$emit('update:show', false)
+    }
   }
+
+}
 </script>
 <style >
   .cardtree {

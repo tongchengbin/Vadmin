@@ -1,19 +1,19 @@
 <template>
   <div class="createPost-container">
     <header class="header">
-      <el-button  v-loading="loading" style="margin-left: 10px;" type="success" @click="submitForm">发布</el-button>
-      <el-button v-loading="loading" type="warning" >草稿</el-button>
+      <el-button v-loading="loading" style="margin-left: 10px;" type="success" @click="submitForm">发布</el-button>
+      <el-button v-loading="loading" type="warning">草稿</el-button>
     </header>
     <div>
-      <el-form class="form-container" :model="postForm"  ref="postForm" size="mini">
+      <el-form ref="postForm" class="form-container" :model="postForm" size="mini">
         <div class="createPost-main-container">
-          <textarea class="titleInput Input-wrapper" placeholder="请输入标题（最多 50 个字）" style="height: 44px;"></textarea>
-          <textarea class="descInput" placeholder="请输入标题简介" style="height: 44px;"></textarea>
+          <textarea class="titleInput Input-wrapper" placeholder="请输入标题（最多 50 个字）" style="height: 44px;" />
+          <textarea class="descInput" placeholder="请输入标题简介" style="height: 44px;" />
           <div style="margin-bottom: 20px; margin-top: 20px">
-            <Upload v-model="postForm.summary_img"/>
+            <Upload v-model="postForm.summary_img" />
           </div>
           <div class="editor-container">
-            <markdown-editor id="contentEditor" ref="contentEditor" v-model="defaultForm.content" :height="300"></markdown-editor>
+            <markdown-editor id="contentEditor" ref="contentEditor" v-model="defaultForm.content" :height="300" />
           </div>
         </div>
       </el-form>
@@ -23,99 +23,96 @@
 </template>
 
 <script>
-  import MarkdownEditor from '@/components/MarkdownEditor'
-  import Upload from '@/components/Upload/singleImage3'
-  import Multiselect from 'vue-multiselect'// 使用的一个多选框组件，element-ui的select不能满足所有需求
-  import 'vue-multiselect/dist/vue-multiselect.min.css'// 多选框组件css
-  import { fetchArticle, feachCategory, updateArticle, createArticle } from '@/api/blog'
-  import { CommentDropdown, PlatformDropdown, SourceUrlDropdown } from './Dropdown'
-
+import MarkdownEditor from '@/components/MarkdownEditor'
+import Upload from '@/components/Upload/singleImage3'
+import 'vue-multiselect/dist/vue-multiselect.min.css'// 多选框组件css
+import { fetchArticle, feachCategory, updateArticle, createArticle } from '@/api/blog'
 export default {
-  name: 'articleDetail',
-  components: { Upload, Multiselect, CommentDropdown, PlatformDropdown, SourceUrlDropdown, MarkdownEditor },
+  name: 'ArticleDetail',
+  components: { Upload, MarkdownEditor },
   props: {
-      isEdit: {
-        type: Boolean,
-        default: false
-      }
+    isEdit: {
+      type: Boolean,
+      default: false
+    }
   },
   data() {
-      return {
+    return {
 
-        defaultForm: {
-          status: 1,
-          title: '', // 文章题目
-          content: '', // 文章内容
-          summary: '', // 文章摘要
-          summary_img: '', // 文章图片
-          category: '', // 文章分类
-          display_time: undefined, // 前台展示时间
-          id: undefined,
-          article_from: null,
-          is_top: false,
-          category_id: null
-        },
-        options: [],
-        postForm: Object.assign({}, this.defaultForm),
-        loading: false,
-        categorylist: []
-      }
+      defaultForm: {
+        status: 1,
+        title: '', // 文章题目
+        content: '', // 文章内容
+        summary: '', // 文章摘要
+        summary_img: '', // 文章图片
+        category: '', // 文章分类
+        display_time: undefined, // 前台展示时间
+        id: undefined,
+        article_from: null,
+        is_top: false,
+        category_id: null
+      },
+      options: [],
+      postForm: Object.assign({}, this.defaultForm),
+      loading: false,
+      categorylist: []
+    }
   },
   computed: {
-      contentShortLength() {
-        return this.postForm.summary.length
-      }
+    contentShortLength() {
+      return this.postForm.summary.length
+    }
   },
   created() {
-      this.featchcalss()
-      if (this.isEdit) {
-        const id = this.$route.params && this.$route.params.id
-        this.fetchData(id)
-      } else {
-        this.postForm = Object.assign({}, this.defaultForm)
-      }
+    this.featchcalss()
+    if (this.isEdit) {
+      const id = this.$route.params && this.$route.params.id
+      this.fetchData(id)
+    } else {
+      this.postForm = Object.assign({}, this.defaultForm)
+    }
   },
   methods: {
-      fetchData(id) {
-        fetchArticle(id).then(response => {
-          this.postForm = response.data
+    fetchData(id) {
+      fetchArticle(id).then(response => {
+        this.postForm = response.data
         // Just for test
-        }).catch(err => {
-          console.log(err)
-        })
-      },
-      featchcalss() {
-        feachCategory().then(response => {
-          this.options = response.data
-        })
-      },
-      submitForm() {
-        this.postForm.display_time = parseInt(this.display_time / 1000)
-        this.loading = true
-        // post
-        if (this.isEdit) {
-          updateArticle(this.postForm).then(response => {
-            this.$notify({
-              title: '成功',
-              message: '发布文章成功',
-              type: 'success',
-              duration: 2000
-            })
-            this.loading = false
+      }).catch(err => {
+        console.log(err)
+      })
+    },
+    featchcalss() {
+      feachCategory().then(response => {
+        this.options = response.data
+      })
+    },
+    submitForm() {
+      this.postForm.display_time = parseInt(this.display_time / 1000)
+      this.loading = true
+      // post
+      if (this.isEdit) {
+        updateArticle(this.postForm).then(response => {
+          this.$notify({
+            title: '成功',
+            message: '发布文章成功',
+            type: 'success',
+            duration: 2000
           })
-        } else {
-          createArticle(this.postForm).then(response => {
-            this.$notify({
-              title: '成功',
-              message: '发布文章成功',
-              type: 'success',
-              duration: 2000
-            })
-            this.loading = false
+          this.loading = false
+        })
+      } else {
+        createArticle(this.postForm).then(response => {
+          this.$notify({
+            title: '成功',
+            message: '发布文章成功',
+            type: 'success',
+            duration: 2000
           })
-        }
-        this.$router.push({ path: '/blog/list' })
+          this.loading = false
+        })
       }
+      this.$router.push({ path: '/blog/list' })
+    }
 
   }
 }

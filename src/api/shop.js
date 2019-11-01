@@ -62,26 +62,12 @@ export function qiaohurecord(params) {
 }
 // 巧虎
 // 添加
-export function qiaohuCreate(data) {
-  return request({
-    url: '/api/admin/qiaohuorder/',
-    method: 'post',
-    data
-  })
-}
+
 //  修改
 export function qiaohuUpdate(data) {
   return request({
     url: '/api/admin/qiaohuorder/' + data.id + '/',
     method: 'put',
-    data
-  })
-}
-// 删除
-export function qiaohuDelete(data) {
-  return request({
-    url: '/api/admin/qiaohuorder/' + data.id + '/',
-    method: 'delete',
     data
   })
 }
@@ -202,7 +188,7 @@ export function featchCategoryTree() {
 export function featchCategoryList(params) {
   return request({
     url: '/api/admin/shop/category/',
-    parmas,
+    params,
     method: 'get'
   })
 }

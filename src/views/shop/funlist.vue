@@ -3,10 +3,10 @@
     <div class="nav">
       <div class="w">
         <div class="price-interval">
-          <input type="number" class="input" placeholder="价格" v-model="params.min">
+          <input v-model="params.min" type="number" class="input" placeholder="价格">
           <span style="margin: 0 5px"> - </span>
-          <input type="number" placeholder="价格" v-model="params.max">
-          <y-button text="确定" classStyle="main-btn" @btnClick="reset" style="margin-left: 10px;"></y-button>
+          <input v-model="params.max" type="number" placeholder="价格">
+          <y-button text="确定" class-style="main-btn" style="margin-left: 10px;" @btnClick="reset" />
         </div>
       </div>
     </div>
@@ -17,83 +17,83 @@
   </div>
 </template>
 <script>
-  import { funserver } from '@/api/shop'
-  // import mallGoods from './components/mallGoods'
-  import YButton from './components/YButton'
-  export default {
-    data() {
-      return {
-        computer: [],
-        busy: false,
-        timer: null,
-        sortType: 1,
-        windowHeight: null,
-        windowWidth: null,
-        params: {
-          page: 1,
-          sort: '',
-          min: '',
-          max: ''
-        }
+import { funserver } from '@/api/shop'
+// import mallGoods from './components/mallGoods'
+import YButton from './components/YButton'
+export default {
+  components: {
+    // mallGoods,
+    YButton
+  },
+  data() {
+    return {
+      computer: [],
+      busy: false,
+      timer: null,
+      sortType: 1,
+      windowHeight: null,
+      windowWidth: null,
+      params: {
+        page: 1,
+        sort: '',
+        min: '',
+        max: ''
       }
-    },
-    methods: {
-      _getComputer(flag) {
-        const { page, sort, min, max } = this.params
-        const params = {
-          page,
-          sort,
-          priceGt: min,
-          priceLte: max
-        }
-        funserver(params).then(res => {
-          console.log(res)
-          const data = res.data
-          if (flag) {
-            this.computer = this.computer.concat(data)
-          } else {
-            this.computer = data
-          }
-        })
-      },
-      // 默认排序
-      reset() {
-        this.sortType = 1
-        this.params.sort = ''
-        this.params.page = 1
-        this.busy = false
-        this._getComputer()
-      },
-      // 价格排序
-      sort(v) {
-        v === 1 ? this.sortType = 2 : this.sortType = 3
-        this.params.sort = v
-        this.params.page = 1
-        this.busy = false
-        this._getComputer()
-      },
-      // 加载更多
-      loadMore() {
-        this.busy = true
-        this.timer = setTimeout(() => {
-          this.params.page++
-          this._getComputer(true)
-          this.busy = false
-        }, 500)
+    }
+  },
+  created() {
+    this._getComputer()
+  },
+  mounted() {
+    this.windowHeight = window.innerHeight
+    this.windowWidth = window.innerWidth
+  },
+  methods: {
+    _getComputer(flag) {
+      const { page, sort, min, max } = this.params
+      const params = {
+        page,
+        sort,
+        priceGt: min,
+        priceLte: max
       }
+      funserver(params).then(res => {
+        console.log(res)
+        const data = res.data
+        if (flag) {
+          this.computer = this.computer.concat(data)
+        } else {
+          this.computer = data
+        }
+      })
     },
-    created() {
+    // 默认排序
+    reset() {
+      this.sortType = 1
+      this.params.sort = ''
+      this.params.page = 1
+      this.busy = false
       this._getComputer()
     },
-    mounted() {
-      this.windowHeight = window.innerHeight
-      this.windowWidth = window.innerWidth
+    // 价格排序
+    sort(v) {
+      v === 1 ? this.sortType = 2 : this.sortType = 3
+      this.params.sort = v
+      this.params.page = 1
+      this.busy = false
+      this._getComputer()
     },
-    components: {
-      // mallGoods,
-      YButton
+    // 加载更多
+    loadMore() {
+      this.busy = true
+      this.timer = setTimeout(() => {
+        this.params.page++
+        this._getComputer(true)
+        this.busy = false
+      }, 500)
     }
   }
+}
 </script>
 <style lang="scss" rel="stylesheet/scss" scoped>
   @import "../../assets/style/mixin";

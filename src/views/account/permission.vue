@@ -1,13 +1,13 @@
 <template>
   <div class="app-container">
     <!--<div class="filter-container">-->
-      <!--<el-input v-model="listQuery.search" style="width: 200px;"  placeholder="Search"></el-input>-->
-      <!--<el-button class="filter-item" type="primary"  icon="el-icon-search" @click="handleFilter">Search</el-button>-->
-      <!--<router-link>-->
-        <!--<el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit">添加</el-button>-->
-      <!--</router-link>-->
+    <!--<el-input v-model="listQuery.search" style="width: 200px;"  placeholder="Search"></el-input>-->
+    <!--<el-button class="filter-item" type="primary"  icon="el-icon-search" @click="handleFilter">Search</el-button>-->
+    <!--<router-link>-->
+    <!--<el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit">添加</el-button>-->
+    <!--</router-link>-->
     <!--</div>-->
-    <el-table :data="list" v-loading.body="listLoading" border fit highlight-current-row style="width: 100%">
+    <el-table v-loading.body="listLoading" :data="list" border fit highlight-current-row style="width: 100%">
       <el-table-column min-width="300px" label="用户名">
         <template slot-scope="scope">
           <router-link class="link-type">
@@ -17,14 +17,21 @@
       </el-table-column>
       <el-table-column width="180px" align="center" label="邮箱">
         <template slot-scope="scope">
-          <span>{{scope.row.email}}</span>
+          <span>{{ scope.row.email }}</span>
         </template>
       </el-table-column>
     </el-table>
     <div class="pagination-container">
-      <el-pagination background @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="listQuery.page"
-        :page-sizes="[10,20,30, 50]" :page-size="listQuery.limit" layout="total, sizes, prev, pager, next, jumper" :total="total">
-      </el-pagination>
+      <el-pagination
+        background
+        :current-page="listQuery.page"
+        :page-sizes="[10,20,30, 50]"
+        :page-size="listQuery.limit"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+      />
     </div>
   </div>
 </template>
@@ -33,7 +40,17 @@
 import { CommonApi } from '@/api/account'
 
 export default {
-  name: 'permission',
+  name: 'Permission',
+  filters: {
+    statusFilter(status) {
+      const statusMap = {
+        published: 'success',
+        draft: 'info',
+        deleted: 'danger'
+      }
+      return statusMap[status]
+    }
+  },
   data() {
     return {
       list: null,
@@ -43,16 +60,6 @@ export default {
         page: 1,
         limit: 10
       }
-    }
-  },
-  filters: {
-    statusFilter(status) {
-      const statusMap = {
-        published: 'success',
-        draft: 'info',
-        deleted: 'danger'
-      }
-      return statusMap[status]
     }
   },
   created() {

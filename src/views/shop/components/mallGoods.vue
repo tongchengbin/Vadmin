@@ -3,40 +3,40 @@
     <div>
       <div class="good-img">
         <!--<router-link :to="{path:'/funserver',query: {name: msg.en}}">-->
-          <img :src="msg.frist_img" >
+        <img :src="msg.frist_img">
         <!--</router-link>-->
       </div>
-      <h6 class="good-title">{{msg.title}}</h6>
+      <h6 class="good-title">{{ msg.title }}</h6>
       <div class="good-price">
-        <p><span style="font-size: 16px;text-align: left">￥ {{ msg.sales}}</span><span style="font-size: 16px">￥</span>{{ msg.price}}</p>
+        <p><span style="font-size: 16px;text-align: left">￥ {{ msg.sales }}</span><span style="font-size: 16px">￥</span>{{ msg.price }}</p>
       </div>
     </div>
   </div>
 </template>
 <script>
-  import YButton from './YButton'
-  import { mapMutations, mapState } from 'vuex'
-  export default {
-    props: {
-      msg: { type: [Object, Array] }
-    },
-    data() {
-      return {}
-    },
-    methods: {
-      ...mapMutations(['ADD_CART', 'ADD_ANIMATION', 'SHOW_CART']),
-      addCart(id, price, name, img) {
-      }
-    },
-    computed: {
-      ...mapState(['login', 'showMoveImg', 'showCart'])
-    },
-    mounted() {
-    },
-    components: {
-      YButton
+import YButton from './YButton'
+import { mapMutations, mapState } from 'vuex'
+export default {
+  props: {
+    msg: { type: [Object, Array] }
+  },
+  data() {
+    return {}
+  },
+  methods: {
+    ...mapMutations(['ADD_CART', 'ADD_ANIMATION', 'SHOW_CART']),
+    addCart(id, price, name, img) {
     }
+  },
+  computed: {
+    ...mapState(['login', 'showMoveImg', 'showCart'])
+  },
+  mounted() {
+  },
+  components: {
+    YButton
   }
+}
 </script>
 <style lang="scss" rel="stylesheet/scss" scoped>
   @import "../../../assets/style/mixin";

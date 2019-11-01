@@ -1,17 +1,15 @@
 <template>
-  <div class="dashboard-container">
-    <component :is="currentRole"></component>
-  </div>
+  <h1>Index</h1>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-import adminDashboard from './admin'
-import editorDashboard from './editor'
+// import adminDashboard from './admin'
+// import editorDashboard from './editor'
 
 export default {
-  name: 'dashboard',
-  components: { adminDashboard, editorDashboard },
+  name: 'Dashboard',
+  // components: { adminDashboard, editorDashboard },
   data() {
     return {
       currentRole: 'adminDashboard'
@@ -27,7 +25,7 @@ export default {
       this.currentRole = 'editorDashboard'
     }
 
-    window.__this = this;
+    window.__this = this
   }
 }
 </script>
