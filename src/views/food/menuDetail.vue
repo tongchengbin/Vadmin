@@ -78,7 +78,7 @@
           </el-table-column>
           <el-table-column align="center" label="操作" width="400px">
             <template slot-scope="scope">
-              <el-button @click="actionDetail(scope.$index)"size="mini" type="success">详情</el-button>
+              <el-button @click="actionDel(scope.$index)"size="mini" type="success">详情</el-button>
               <el-button size="mini" type="primary"><router-link :to="{path:'addMenu',query:{id:scope.row.id}}">编辑</router-link></el-button>
               <el-button @click="actionDel(scope.$index)"size="mini" type="danger">删除</el-button>
             </template>
@@ -106,53 +106,6 @@
         <el-button @click="submitImport" size="mini" type="primary">导入</el-button>
         <el-button @click="importDialog=false" size="mini" type="primary">取消</el-button>
       </div>
-    </el-dialog>
-    <el-dialog :center="true" top="20px" class="item-detail" width="800px"  :modal="false" :visible.sync="detail.visible">
-      <div slot="title" class="dialog-footer">
-
-      </div>
-     <div class="inner">
-       <div class="banner">
-         <el-carousel>
-           <el-carousel-item class="banner-item" v-for="item in detail.data.imgs" :key="item">
-               <img :src="item"  alt="菜单图片" width="100%"/>
-           </el-carousel-item>
-         </el-carousel>
-       </div>
-       <h2 class="title text-lips">{{detail.data.name}}</h2>
-       <div class="metarial">
-         <h2 class="mini-title">食材清单</h2>
-         <table width="100%" border="0" cellspacing="0" cellpadding="0" class="retamr br8">
-           <tbody>
-           <tr v-for="item in detail.data.foodList">
-             <td class="lirre" style="border-top:0;">
-               <span class="scname"> {{item.name}} </span>
-               <span class="right scnum">{{item.unit}}</span>
-             </td>
-             <td style="border-top:0;">
-               <span class="scname">白砂糖</span>
-               <span class="right scnum">100g</span>
-             </td>
-           </tr>
-           </tbody>
-         </table>
-       </div>
-       <div class="step">
-         <h2 class="mini-title">烹饪步骤</h2>
-         <div class="stepcont clearfix" v-for="(step,index) in detail.data.steps">
-           <a class="cboxElement cboxElement2" data-snum="2" rel="recipe_img"  data-origin="{{step.img}}">
-             <img class="br8" :src="step.img" :alt="step.title" width="200" height="200">
-           </a>
-           <div class="stepinfo">
-             <p>步骤{{index+1}}</p>
-             {{step.title}}
-           </div>
-         </div>
-
-       </div>
-
-
-     </div>
     </el-dialog>
   </div>
 </template>
@@ -192,11 +145,7 @@
         menuList: [],
         //导入dialog
         importDialog:false,
-        importurl:null,
-        detail:{
-          data:{},
-          visible:false
-        }
+        importurl:null
       }
     },
     created() {
@@ -322,24 +271,11 @@
           query: data
         });
 
-      },
-      actionDetail(item){
-        console.log(item,this.menuList)
-        var obj=this.menuList[item]
-        console.log(obj)
-        request.get(CoreApi.FOOD_MENULIST+obj.id+'/').then(res=>{
-          this.detail.visible=true
-          this.detail.data=res
-          console.log(res)
-        })
       }
     }
   }
 </script>
 <style>
-  .right {
-    float: right;
-  }
   .main{
     min-height: 450px;
   }
@@ -404,103 +340,5 @@
   }
   .mupAction{
     margin: 10px 0;
-  }
-
-
-  /*item*/
-  .item-detail{
-
-  }
-  .item-detail .inner{
-    padding: 10px 10px;
-
-  }
-  .item-detail .banner {
-    /*display: block;*/
-    /*width: 690px;*/
-    /*height: 390px;*/
-    /*overflow: hidden;*/
-    /*border-radius: 8px;*/
-  }
-  .item-detail .banner .banner-item{
-    border-radius: 10px;
-  }
-  .item-detail .title {
-    font-size: 22px;
-    color: #333;
-    font-weight: bold;
-    line-height: 24px;
-  }
-  .item-detail .el-dialog__body{
-    padding-top: 0px;
-  }
-  .item-detail .metarial{
-
-  }
-
-  .item-detail .mini-title {
-    font-size: 18px;
-    color: #333;
-    line-height: 18px;
-    font-weight: bold;
-    margin: 30px 0 20px;
-  }
-  .metarial .lirre {
-    width: 343px;
-    border-right: 1px solid #e5e5e5;
-  }
-  .metarial .scname {
-    display: inline-block;
-    width: 254px;
-    padding-right: 5px;
-  }
-
-  .metarial table {
-    margin-left: 1px;
-    color: #999;
-    border-collapse: collapse;
-    border-spacing: 0;
-    overflow: hidden;
-  }
-
-  .metarial tr {
-    background: #F1F7FA;
-    color: #333;
-  }
-  .metarial td {
-    border-top: 1px solid #e5e5e5;
-    padding: 13px 0;
-    width: 50%;
-  }
-  .metarial span {
-    padding: 0 18px;
-    font-size: 15px;
-  }
-  .item-detail .stepcont {
-    margin: 25px 0 40px;
-  }
-
-  .stepcont a {
-    float: left;
-  }
-
-  .stepcont .stepinfo {
-    float: left;
-    padding: 0;
-    width: 480px;
-    min-height: 200px;
-    word-wrap: break-word;
-    margin-left: 10px;
-    font-size: 15px;
-    color: #333;
-    line-height: 27px;
-    overflow: hidden;
-  }
-  .stepcont .stepinfo p {
-    line-height: 0;
-    font-weight: bold;
-  }
-  .br8 {
-    border-radius: 8px;
   }
 </style>
