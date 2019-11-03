@@ -26,10 +26,11 @@
         </el-form-item>
         <el-form-item label="图片" label-width="80px">
           <el-upload
-            action="https://jsonplaceholder.typicode.com/posts/"
+            :action="uploadActionUrl"
             list-type="picture-card"
-            :file-list="form.imgs"
-            :http-request="uploadfile"
+            :file-list="imgs"
+          :on-success="uploadSuccess"
+          :headers=header
             :limit="6"
             :on-remove="removeImg"
             :on-exceed="onExceed"
@@ -129,17 +130,23 @@
   import { Message } from 'element-ui'
   import request from '../../api/public'
   import CoreApi from '../../api/CoreApi'
-
+  import { getToken } from '@/utils/auth'
   export default {
     name: 'addMenu',
     data: function() {
+      let  header={
+          "token":getToken()
+      };
+      let uploadActionUrl=process.env.VUE_APP_BASE_API+CoreApi.uploadActionUrl
       return {
+          header,
+          uploadActionUrl,
         // 分类选项
+          imgs:[],
         id:null,
         dialogVisible:false,
         foodoptions:[],
         options:[],
-        fileList:[],
         // 添加材料
         foodForm:{
           id:null,
@@ -166,24 +173,23 @@
     created(){
     //  初始化
     //  加载分类选项
-      this.id=this.$route.query.id
-      this.url=this.$route.query.url
+      this.id=this.$route.query.id;
+      this.url=this.$route.query.url;
        // 如果有id 就是编辑 否者就是新增
       if(this.id){
       //  拉取数据
         request.get(CoreApi.FOOD_MENULIST+this.id+'/',{}).then(res=>{
-          this.foodList=res.foodList
-          this.form.name=res.name
-          this.form.difficulty=res.difficulty
-          this.form.time=res.time
-          this.form.cate=res.cate
-          this.form.is_active=res.is_active
-          this.form.tags=res.tags
+          this.foodList=res.foodList;
+          this.form.name=res.name;
+          this.form.difficulty=res.difficulty;
+          this.form.time=res.time;
+          this.form.cate=res.cate;
+          this.form.is_active=res.is_active;
+          this.form.tags=res.tags;
           for (var i = 0; i < res.imgs.length; i++) {
-            this.form.imgs.push({name:"",url:res.imgs[i].url+"?x-oss-process=style/size"})
+            this.imgs.push({name:"",url:res.imgs[i]+"?x-oss-process=style/size"})
           }
-          this.form.steps=res.steps
-          console.log('详情',res)
+          this.form.steps=res.steps;
           }
         )
       }
@@ -217,39 +223,27 @@
       submitAdd() {
         // 数据校验
         //更新还是添加
-        if(this.id){
-          for(var i=0;i<this.fileList.length;i++){
-            let url =this.fileList[i].url
-            url=url.split("?")[0]
-            this.form.imgs.push(url)
+          this.form.imgs=[];
+          for(let i=0;i<this.imgs.length;i++){
+              this.form.imgs.push(this.imgs[i].url.split("?")[0])
           }
+        if(this.id){
           request.put(CoreApi.FOOD_MENULIST+this.id+'/',this.form).then(res=>{
+              console.log(this.form)
             this.goback()
           })
         }else{
-          this.form.imgs=this.fileList
           request.post(CoreApi.FOOD_MENULIST,this.form).then(res => {
             this.goback()
           })
         }
       },
       removeImg(t,f) {
-        console.log('remove')
-        this.fileList=f
+          this.imgs=f
       },
       removeFood(index) {
         this.foodList.pop(index)
       },
-      uploadfile(file) {
-        const formData = new FormData()
-        formData.append('file', file.file)
-        request.post(CoreApi.uploadActionUrl, formData).then(res => {
-          this.fileList.push({ name: '', url: res.url })
-        }).catch(err => {
-          console.log(err)
-        })
-      },
-      // 文件上传-超出限制
       onExceed: function() {
         Message({
           message: '仅支持一张图片',
@@ -259,7 +253,7 @@
       },
       // 添加材料 打开弹框
       addfood:function() {
-        this.dialogVisible=true
+        this.dialogVisible=true;
       //  加载下拉选项
         request.get(CoreApi.FOOD_FOODLIST_SELECT,{}).then(res=>{
           this.foodoptions=res
@@ -268,11 +262,11 @@
       },
       addstep:function() {
       //  添加步骤
-        this.form.steps.push(this.stepForm)
+        this.form.steps.push(this.stepForm);
         this.stepForm={}
       },
       stepDel: function(index){
-        this.form.steps.pop(index)
+        this.form.steps.pop(index);
         this.$notify.success({
           title: 'Info',
           message: '删除成功',
@@ -302,7 +296,11 @@
       },
       removeStepImg:function(index) {
         this.form.steps[index].img=null
-      }
+      },
+
+        uploadSuccess(response, file, fileList){
+            this.imgs.push({"name":"","url":response.url})
+        }
 
     }
   }

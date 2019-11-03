@@ -12,33 +12,23 @@
             size="mini"
           placeholder="请输入内容"
           v-model="typeSearch">
-          <template   slot="append"><el-button size="mini" @click="treeSearch" class="search el-icon-search"></el-button></template>
+          <template   slot="append"><el-button type="primary" size="mini" @click="treeSearch" class="search el-icon-search"></el-button></template>
         </el-input>
         </div>
         <el-tree ref="tree" class="tree" :data="treeData" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
       </div>
     </div>
     <div class="container">
-      <div class="box">
         <div class="page-header">
-          <el-form :inline="true">
-            <el-form-item label="名称">
-              <!--<el-input style="width: 100px" size="mini" v-model="params.name"></el-input>-->
-            </el-form-item>
-            <el-form-item><el-button @click="foodlist" size=mini type="primary" class="el-icon-search"></el-button></el-form-item>
-            <el-form-item>
-              <el-button @click="actionAdd" class="header-add" size="mini" type="primary" >添加</el-button>
-            </el-form-item>
-          </el-form>
+          <el-input placeholder="名称搜索" style="width: 100px" size="mini" v-model="params.name"></el-input>
+          <el-button @click="foodlist" size=mini type="primary" class="el-icon-search"></el-button>
         </div>
         <div class="page-data">
           <el-table class="table-data" v-loading="loading"  size="mini" :data="fooddata" :border="true" :highlight-current-row="true" style="width: 100%;min-width: 300px">-->
-            <el-table-column width="100px" label="主图" align="center" >
-            <template slot-scope="scope">
-            <div style="width: 80px;margin: auto">
-            <img class="item-img" :src="scope.row.img" alt="" style="width: 100%">
-            </div>
-            </template>
+            <el-table-column width="80px" label="主图" align="center" >
+              <template slot-scope="scope">
+                <div style="width: 60px"><img-viewer :src="scope.row.img"></img-viewer></div>
+              </template>
             </el-table-column>
             <el-table-column
             prop="name"
@@ -82,10 +72,9 @@
             </el-table>
         </div>
         <div class="m-page">
-          <el-pagination :background="true" layout="prev, pager, next" :total="total"  @current-change="changePgae">
+          <el-pagination :background="true" layout="total, prev, pager, next" :total="total"  @current-change="changePgae">
           </el-pagination>
         </div>
-    </div>
     </div>
     <div class="Dialog">
       <el-dialog
@@ -188,18 +177,15 @@
     </div>
   </div>
 
-
-
-
-
 </template>
 
 <script>
 import { Message } from 'element-ui'
 import request from '../../api/public'
 import CoreApi from '../../api/CoreApi'
-
+import ImgViewer from '../../components/ImgViewer'
 export default {
+  components: { ImgViewer },
   data: function() {
     return {
       //left
@@ -249,6 +235,7 @@ export default {
       editCateNameForm:{id:null,name:null,parent:null},
     }
   },
+
   created() {
     this.loadTree()
     this.foodlist()
@@ -537,7 +524,7 @@ export default {
   }
 }
 </script>
-<style>
+<style scoped>
   /*
   通用
   */
@@ -553,7 +540,7 @@ export default {
   vue
    */
   .search{
-    color: #fff!important;
+    /*color: #fff!important;*/
   }
   .el-select .el-input {
     width: 130px;
@@ -603,7 +590,8 @@ export default {
     border: solid 1px #eee;
     padding: 10px;
     margin-bottom: 20px;
-
+    margin-left: 0;
+    margin-right: 0;
   }
 
   .main .container{
@@ -616,11 +604,11 @@ export default {
     width: 100%;
     height: 100%;
   }
-  .box .page-header .el-form-item{
+  .container .page-header .el-form-item{
     margin-bottom: 0;
   }
 
-  .box .m-page{
+  .container .m-page{
     margin: 20px 10px;
     text-align: right;
   }

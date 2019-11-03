@@ -21,10 +21,11 @@
             type="selection"
             width="55">
           </el-table-column>
-          <el-table-column label="主图" align="center" type="index" width="100px" >
+          <el-table-column label="主图" align="center" type="index" width="80px" class="img-col" cell-class-name="changeCellStyle">
             <template slot-scope="scope">
-              <div v-if="scope.row.display_img" style="width: 80px">
-                <img  :src="scope.row.display_img+'?x-oss-process=style/size'" alt="" style="width: 100%">
+              <div v-if="scope.row.display_img" style="width: 60px">
+                <img-viewer :src="scope.row.display_img"></img-viewer>
+<!--                  <img  :src="scope.row.display_img+'?x-oss-process=style/size'" alt="" style="width: 100%">-->
               </div>
             </template>
           </el-table-column>
@@ -140,7 +141,7 @@
        <div class="step">
          <h2 class="mini-title">烹饪步骤</h2>
          <div class="stepcont clearfix" v-for="(step,index) in detail.data.steps">
-           <a class="cboxElement cboxElement2" data-snum="2" rel="recipe_img"  data-origin="{{step.img}}">
+           <a class="cboxElement cboxElement2" data-snum="2" rel="recipe_img" >
              <img class="br8" :src="step.img" :alt="step.title" width="200" height="200">
            </a>
            <div class="stepinfo">
@@ -158,10 +159,12 @@
 </template>
 
 <script>
+  import ImgViewer from '../../components/ImgViewer'
   import { Message } from 'element-ui'
   import request from '../../api/public'
   import CoreApi from '../../api/CoreApi'
   export default {
+
     data() {
       return {
         parentCateOptions: null,
@@ -199,23 +202,24 @@
         }
       }
     },
+      components: { ImgViewer },
+
     created() {
       this.menulist()
     },
     methods: {
       // 菜单列表
       menulist() {
-        this.loading=true
-        this.params.page=1
+        this.loading=true;
         request.get(CoreApi.FOOD_MENULIST, this.params).then(res => {
-          this.menuList = res.results
-          this.listTotal=res.count
-          this.loading=false
+          this.menuList = res.results;
+          this.listTotal=res.count;
+          this.loading=false;
         })
       },
       //换页
       changePgae(page) {
-        this.params.page=page
+        this.params.page=page;
         this.menulist()
       },
       actionEdit(id) {
@@ -336,7 +340,7 @@
     }
   }
 </script>
-<style>
+<style scoped>
   .right {
     float: right;
   }
@@ -346,7 +350,10 @@
   }
   .page-header{
     padding: 5px 5px;
-    margin: 10px 20px;
+    margin-top: 10px;
+    margin-bottom: 0!important;
+    margin-left: 20px;
+    margin-right: 20px;
     border: dashed 1px #1890ff;
     clear: both;
     box-sizing: border-box;
@@ -373,7 +380,10 @@
     /*top: 70px;*/
     /*bottom: 80px;*/
   }
-
+  .page-data table td{
+    padding-top: 0;
+    padding-bottom: 0;
+  }
   .header-add{
     margin: 0 5px;
     float: right;
