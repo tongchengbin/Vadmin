@@ -19,17 +19,17 @@ function hasPermission(roles, route) {
  * @param roles
  */
 export function filterAsyncRoutes(routes, roles) {
-  const res = []
+  const res = [];
 
   routes.forEach(route => {
-    const tmp = { ...route }
+    const tmp = { ...route };
     if (hasPermission(roles, tmp)) {
       if (tmp.children) {
         tmp.children = filterAsyncRoutes(tmp.children, roles)
       }
       res.push(tmp)
     }
-  })
+  });
 
   return res
 }
@@ -37,18 +37,17 @@ export function filterAsyncRoutes(routes, roles) {
 const state = {
   routes: [],
   addRoutes: []
-}
+};
 
 const mutations = {
   SET_ROUTES: (state, routes) => {
-    state.addRoutes = routes
+    state.addRoutes = routes;
     state.routes = constantRoutes.concat(routes)
   }
-}
+};
 
 const actions = {
   generateRoutes({ commit }, roles) {
-    console.log('generate routes')
     return new Promise(resolve => {
       // if (roles.includes('admin')) {
       //   accessedRoutes = asyncRoutes || []

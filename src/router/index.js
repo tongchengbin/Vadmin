@@ -7,11 +7,11 @@ Vue.use(Router)
 import Layout from '@/layout'
 
 export const constantRoutes = [
-  { path: '/login', component: () => import('@/views/login/index'), hidden: true, auth: false },
-  { path: '/authredirect', component: () => import('@/views/login/authredirect'), hidden: true, auth: false },
-  { path: '/404', component: () => import('@/views/errorPage/404'), hidden: true, auth: false },
-  { path: '/401', component: () => import('@/views/errorPage/401'), hidden: true, auth: false },
-  { path: '/403', component: () => import('@/views/errorPage/403'), hidden: true, auth: false },
+  {path: '/login', component: () => import('@/views/login/index'), hidden: true, auth: false},
+  {path: '/authredirect', component: () => import('@/views/login/authredirect'), hidden: true, auth: false},
+  {path: '/404', component: () => import('@/views/errorPage/404'), hidden: true, auth: false},
+  {path: '/401', component: () => import('@/views/errorPage/401'), hidden: true, auth: false},
+  {path: '/403', component: () => import('@/views/errorPage/403'), hidden: true, auth: false},
   {
     path: '',
     component: Layout,
@@ -20,7 +20,7 @@ export const constantRoutes = [
       path: 'dashboard',
       component: () => import('@/views/dashboard/index'),
       name: 'dashboard',
-      meta: { title: '主页', icon: 'dashboard', noCache: true, auth: true }
+      meta: {title: '主页', icon: 'dashboard', noCache: true, auth: true}
     }
     ]
   }
@@ -55,31 +55,31 @@ export const asyncRoutes = [
         path: 'user',
         component: () => import('@/views/account/user/'),
         name: 'user',
-        meta: { title: '用户', icon: 'user', auth: true }
+        meta: {title: '用户', icon: 'user', auth: true}
       }
       // { path: 'role', component: () => import('@/views/account/role'), name: 'role', meta: { title: '角色', icon: 'role' }},
       // { path: 'permission', component: () => import('@/views/account/permission'), name: 'permission', meta: { title: '权限', icon: '权限资源' }}
     ]
   },
-  // 加油小厨
+  // 家有小厨
   {
     path: '/food',
     component: Layout,
-    meta: { 'title': '家有小厨', icon: 'icon', auth: true },
+    meta: {'title': '家有小厨', icon: 'icon', auth: true},
     children: [
       {
         path: 'menu',
         component: () => import('@/views/food/menu'),
         name: 'menu',
         auth: true,
-        meta: { 'title': '菜单管理', icon: 'icon', auth: true },
+        meta: {'title': '菜单管理', icon: 'icon', auth: true},
       },
       {
         path: 'addMenu',
         name: 'addmenu',
         component: () => import('@/views/food/addMenu'),
-        hidden:true,
-        meta: {"title":"添加菜谱",icon:'icon',auth:true,hidden:true}
+        hidden: true,
+        meta: {"title": "添加菜谱", icon: 'icon', auth: true, hidden: true}
       },
       // {
       //   path: 'food',
@@ -91,14 +91,50 @@ export const asyncRoutes = [
         path: 'foodcate',
         component: () => import('@/views/food/foodcate'),
         name: 'foodcate',
-        meta: { 'title': '食材管理', icon: 'icon', noCache: false, auth: true }
+        meta: {'title': '食材管理', icon: 'icon', noCache: false, auth: true}
       },
       {
         path: 'cate',
         component: () => import('@/views/food/cate'),
         name: 'cate',
-        meta: { 'title': '菜单分类', icon: 'icon', noCache: false, auth: true }
+        meta: {'title': '菜单分类', icon: 'icon', noCache: false, auth: true}
+      },
+      {
+        path: 'wxSettings',
+        components: () => import("@/views/food/wxSettings"),
+        name: "wxSettings",
+        meta: {'title': "小程序配置", icon: 'icon', noCache: false, auth: true}
       }
+    ]
+  },
+  // 账单
+  // 家有小厨
+  {
+    path: '/bill',
+    component: Layout,
+    meta: {'title': 'AZ账单', icon: 'icon', auth: true},
+    children: [
+      {
+        path: 'account',
+        component: () => import('../views/bill/bankCard'),
+        name: 'account',
+        auth: true,
+        meta: {'title': '账户管理', icon: 'icon', auth: true},
+      },{
+        path: 'billList',
+        component: () => import('../views/bill/billList'),
+        name: 'billList',
+        auth: true,
+        meta: {'title': '账单管理', icon: 'icon', auth: true},
+      },
+      {
+        path: 'billType',
+        component: () => import('../views/bill/billType'),
+        name: 'billType',
+        auth: true,
+        meta: {'title': '交易类型', icon: 'icon', auth: true},
+      }
+
     ]
   },
 
@@ -170,7 +206,7 @@ export const asyncRoutes = [
       path: 'index',
       component: () => import('@/views/icons/index'),
       name: 'icons',
-      meta: { title: 'icons', icon: 'icon', noCache: true }
+      meta: {title: 'icons', icon: 'icon', noCache: true}
     }]
   }
   // 加油小厨
@@ -334,7 +370,7 @@ export const asyncRoutes = [
 
 const createRouter = () => new Router({
   // mode: 'history', // require service support
-  scrollBehavior: () => ({ y: 0 }),
+  scrollBehavior: () => ({y: 0}),
   routes: constantRoutes
 })
 

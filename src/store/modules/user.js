@@ -9,7 +9,7 @@ const state = {
   introduction: '',
   hasinfo: false,
   roles: []
-}
+};
 
 const mutations = {
   SET_TOKEN: (state, token) => {
@@ -30,7 +30,7 @@ const mutations = {
   SET_HASINFO: (state, hasinfo) => {
     state.hasinfo = hasinfo
   }
-}
+};
 
 const actions = {
   // user login
@@ -51,14 +51,13 @@ const actions = {
   // get user info
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
-      console.log('get user info')
       getUserInfo().then(data => {
-        const { roles_vo, username, avatar, email } = data
-        commit('SET_HASINFO', true)
-        commit('SET_ROLES', roles_vo)
-        commit('SET_NAME', username)
-        commit('SET_AVATAR', avatar)
-        commit('SET_INTRODUCTION', email)
+        const { roles_vo, username, avatar, email } = data;
+        commit('SET_HASINFO', true);
+        commit('SET_ROLES', roles_vo);
+        commit('SET_NAME', username);
+        commit('SET_AVATAR', avatar);
+        commit('SET_INTRODUCTION', email);
         resolve(data)
       }).catch(error => {
         reject(error)
@@ -70,10 +69,10 @@ const actions = {
   logout({ commit, state }) {
     return new Promise((resolve, reject) => {
       logout(state.token).then(() => {
-        commit('SET_TOKEN', '')
-        commit('SET_ROLES', [])
-        removeToken()
-        resetRouter()
+        commit('SET_TOKEN', '');
+        commit('SET_ROLES', []);
+        removeToken();
+        resetRouter();
         resolve()
       }).catch(error => {
         reject(error)
@@ -115,7 +114,7 @@ const actions = {
       resolve()
     })
   }
-}
+};
 
 export default {
   namespaced: true,
