@@ -34,6 +34,6 @@ export default {
 
   BILL_BILLTYPE:'/api/admin/bill/type/',
 
-  BILL_BILLList:'/api/admin/bill/bill/'
+  BILL_BILL:'/api/admin/bill/bill/'
 }
 
