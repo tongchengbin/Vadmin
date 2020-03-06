@@ -24,6 +24,16 @@ export default {
   FOOD_MENULIST: '/api/admin/food/menu/',
   FOOD_MENULIST_MUPDEL: '/api/admin/food/menu/mupdel/',
 
-  FOOD_FOODCATE: '/api/admin/food/foodcate/'
+  FOOD_FOODCATE: '/api/admin/food/foodcate/',
+
+  FOOD_SHUFFLING:'/api/admin/food/shuffling/',
+
+
+
+  BILL_BANKCARD:'/api/admin/bill/bankcard/',
+
+  BILL_BILLTYPE:'/api/admin/bill/type/',
+
+  BILL_BILLList:'/api/admin/bill/bill/'
 }
 
