@@ -46,8 +46,8 @@ export default {
   data() {
     return {
       loginForm: {
-        username: '58296672@qq.com',
-        password: 'abc123456'
+        username: '',
+        password: ''
       },
       passwordType: 'password',
       loading: false,
@@ -71,8 +71,8 @@ export default {
     handleLogin() {
       this.loading = true;
       login(this.loginForm.username, this.loginForm.password).then(res => {
-        this.loading = false;
-        setToken(res.token);
+        this.loading = false
+        setToken(res.data.token)
         this.$router.push({ path: '/' })
       })
     }
@@ -90,6 +90,7 @@ export default {
       display: inline-block;
       height: 47px;
       width: 85%;
+
       input {
         background: transparent;
         border: 0px;
@@ -105,6 +106,7 @@ export default {
         }
       }
     }
+
     .el-form-item {
       border: 1px solid rgba(255, 255, 255, 0.1);
       background: rgba(0, 0, 0, 0.1);
@@ -172,6 +174,7 @@ export default {
         text-align: center;
         font-weight: bold;
       }
+
       .set-language {
         color: #fff;
         position: absolute;
@@ -179,6 +182,7 @@ export default {
         right: 0px;
       }
     }
+
     .show-pwd {
       position: absolute;
       right: 10px;

@@ -106,7 +106,7 @@
 </template>
 
 <script>
-import request from '@/api/public'
+import request from '../../api/public'
 import CoreApi from '@/api/CoreApi'
 import { mapGetters } from 'vuex'
 
@@ -171,13 +171,7 @@ export default {
       })
     },
     getRoleData() {
-      request.get(CoreApi.ACCOUNT_ROLE_GET, {}).then(response => {
-        response.data.forEach(item => {
-          this.RolesData.push({
-            'label': item.name, 'key': item.id
-          })
-        })
-      })
+
     },
     handleSizeChange(val) {
       this.listQuery.limit = val

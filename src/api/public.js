@@ -4,7 +4,6 @@ import request from '@/utils/request'
 export default {
   get(url, params, pk) {
     url = pk ? url.replace('{pk}', pk) : url
-    console.log(url)
     return request({
       url,
       method: 'get',
